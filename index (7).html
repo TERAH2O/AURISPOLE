@@ -1,0 +1,3097 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auris Pole · CRM Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --black:#0C0B09;--dark:#181714;--char:#252220;
+  --white:#FEFCF8;--cream:#F5F0E8;--beige:#EAE0CE;--beige2:#D9CBAF;
+  --tan:#C2A87A;--tan2:#9E7E4E;
+  --gray:#6E6860;--lgray:#A89F94;--line:#E2D9C8;
+  --green:#2A5E3F;--gbg:#EAF3EE;
+  --red:#7A2525;--rbg:#F5EAEA;
+  --amber:#7A5C18;--abg:#F5F0E0;
+  --blue:#1E3E6E;--bbg:#E8EFF8;
+  --wa:#128C5E;--wabg:#E4F5EC;
+  --side:252px;--top:58px;
+  --r:3px;--sh:0 1px 8px rgba(12,11,9,.05);--wab:var(--wabg);
+}
+html,body{height:100%;background:var(--cream);color:var(--black);font-family:'Jost',sans-serif;font-size:14px;line-height:1.5;}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--beige2);border-radius:3px}
+.shell{display:none;height:100vh;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{width:var(--side);background:var(--black);flex-shrink:0;display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden}
+.s-logo{padding:16px 18px 14px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.s-logo img{width:178px;max-width:100%;height:auto;object-fit:contain;display:block}
+.s-group{padding:12px 0 2px}
+.s-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.18);padding:3px 20px 7px}
+.s-item{display:flex;align-items:center;gap:10px;width:100%;padding:9px 20px;font-family:'Jost',sans-serif;font-size:13px;font-weight:400;color:rgba(255,255,255,.4);border:none;background:none;cursor:pointer;transition:all .18s;text-align:left;border-left:2px solid transparent}
+.s-item:hover{color:rgba(255,255,255,.8);background:rgba(255,255,255,.04)}
+.s-item.on{color:#fff;background:rgba(255,255,255,.09);border-left-color:var(--tan);font-weight:500}
+.s-item .ico{font-size:14px;width:18px;text-align:center;flex-shrink:0}
+.s-item .lbl{flex:1}
+.s-badge{background:var(--red);color:#fff;border-radius:10px;padding:1px 5px;font-family:'DM Mono',monospace;font-size:8px;flex-shrink:0}
+.s-foot{margin-top:auto;padding:14px 20px 18px;border-top:1px solid rgba(255,255,255,.05)}
+.s-live{display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,.28);letter-spacing:.1em}
+.s-live .dot{width:6px;height:6px;background:#3ECF6E;border-radius:50%;flex-shrink:0;animation:blink 2.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+
+/* TOPBAR */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.topbar{height:var(--top);background:var(--white);border-bottom:1px solid var(--line);padding:0 26px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0}
+.tb-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;color:var(--dark)}
+.tb-right{display:flex;align-items:center;gap:9px}
+.tb-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--lgray);letter-spacing:.07em;white-space:nowrap}
+.tb-notif{width:32px;height:32px;background:none;border:1px solid var(--line);border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:.18s;position:relative}
+.tb-notif:hover{background:var(--beige)}
+.tb-notif .nn{position:absolute;top:-3px;right:-3px;width:13px;height:13px;background:var(--red);border-radius:50%;font-family:'DM Mono',monospace;font-size:7px;color:#fff;display:flex;align-items:center;justify-content:center}
+.tb-avatar{width:32px;height:32px;background:var(--tan);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:13px;color:var(--white);cursor:pointer;font-weight:700}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;padding:26px;background:var(--cream)}
+.view{display:none}.view.on{display:block;animation:vIn .2s ease}
+@keyframes vIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+
+/* PAGE HEADER */
+.ph{margin-bottom:22px}.ph-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.ph h2{font-family:'Playfair Display',serif;font-size:21px;font-weight:600;color:var(--dark)}
+.ph h2 em{font-style:italic;color:var(--tan2)}
+.ph p{font-size:12px;color:var(--lgray);margin-top:3px}
+.ph-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* STATS */
+.stats-row{display:grid;gap:13px;margin-bottom:22px}
+.s4{grid-template-columns:repeat(4,1fr)}.s5{grid-template-columns:repeat(5,1fr)}.s3{grid-template-columns:repeat(3,1fr)}
+.scard{background:var(--white);border:1px solid var(--line);padding:17px 19px;position:relative;overflow:hidden;border-radius:3px;box-shadow:0 1px 8px rgba(12,11,9,.05);transition:.2s;cursor:default}
+.scard:hover{box-shadow:0 4px 20px rgba(12,11,9,.1);transform:translateY(-1px)}
+.scard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.c1::before{background:var(--black)}.c2::before{background:var(--green)}.c3::before{background:var(--tan)}.c4::before{background:var(--red)}.c5::before{background:var(--wa)}
+.scard-n{font-family:'Playfair Display',serif;font-size:30px;font-weight:600;color:var(--dark);line-height:1}
+.scard-l{font-size:12px;color:var(--gray);margin-top:5px}
+.scard-s{font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);letter-spacing:.07em;margin-top:5px;text-transform:uppercase}
+
+/* CARD */
+.card{background:var(--white);border:1px solid var(--line);border-radius:3px;overflow:hidden;box-shadow:0 1px 8px rgba(12,11,9,.05)}
+.ch{padding:13px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.ch-t{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--dark)}
+.ch-s{font-size:11px;color:var(--lgray);margin-top:1px}
+.crow{padding:11px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;transition:.15s}
+.crow:last-child{border:none}.crow:hover{background:rgba(245,240,232,.5)}
+
+/* TABLE */
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--cream)}
+th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--lgray);padding:9px 14px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 14px;border-bottom:1px solid var(--line);font-size:13px;color:var(--dark);vertical-align:middle}
+tr:last-child td{border:none}
+.trh:hover td{background:rgba(245,240,232,.55)}
+.tda{display:flex;gap:5px;align-items:center}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:5px;padding:7px 15px;font-family:'Jost',sans-serif;font-size:12px;font-weight:500;border:none;cursor:pointer;transition:all .18s;white-space:nowrap;border-radius:3px;letter-spacing:.01em}
+.btn:hover{opacity:.85}.btn:active{transform:scale(.98)}
+.bd{background:var(--black);color:var(--white)}.bo{background:transparent;color:var(--dark);border:1px solid var(--line)}.bo:hover{background:var(--beige)}
+.bg{background:var(--gbg);color:var(--green);border:1px solid rgba(42,94,63,.18)}.br{background:var(--rbg);color:var(--red);border:1px solid rgba(122,37,37,.18)}
+.ba{background:var(--abg);color:var(--amber);border:1px solid rgba(122,92,24,.18)}.bw{background:var(--wabg);color:var(--wa);border:1px solid rgba(18,140,94,.18)}
+.bt{background:var(--tan);color:#fff}.sm{padding:4px 10px;font-size:11px}.xs{padding:2px 7px;font-size:10px}
+.full{width:100%;justify-content:center}
+
+/* BADGES */
+.b{display:inline-flex;align-items:center;padding:2px 7px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.04em;border-radius:2px;white-space:nowrap}
+.bg2{background:var(--gbg);color:var(--green)}.br2{background:var(--rbg);color:var(--red)}.ba2{background:var(--abg);color:var(--amber)}
+.bgr{background:var(--beige);color:var(--gray)}.bk{background:var(--dark);color:#fff}.bw2{background:var(--wabg);color:var(--wa)}.bt2{background:#f2e8d8;color:var(--tan2)}
+
+/* AVATAR */
+.av{border-radius:50%;background:var(--beige);border:1.5px solid var(--beige2);display:inline-flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:700;color:var(--tan2);flex-shrink:0}
+
+/* PROGRESS */
+.prog{height:5px;background:var(--beige);overflow:hidden;border-radius:3px}
+.pf{height:100%;border-radius:3px;transition:width .5s}
+.ok{background:var(--green)}.mid{background:var(--tan)}.hi{background:var(--red)}
+
+/* FILTER BAR */
+.fbar{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
+.fi{padding:7px 11px;border:1px solid var(--line);background:var(--white);font-family:'Jost',sans-serif;font-size:13px;color:var(--dark);outline:none;border-radius:3px;min-width:0}
+.fi:focus{border-color:var(--tan)}
+input.fi{flex:1}
+.fi-search{min-width:180px}
+
+/* TABS */
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tab{padding:8px 16px;font-size:12px;color:var(--lgray);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:.18s;font-family:'Jost',sans-serif}
+.tab.on{color:var(--dark);border-bottom-color:var(--black);font-weight:500}
+.tab:hover{color:var(--dark)}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(10,9,8,.55);z-index:900;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(4px)}
+.ov.on{display:flex}
+.modal{background:var(--white);width:500px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 24px 80px rgba(10,9,8,.25);border-radius:3px;animation:vIn .2s ease}
+.modal.w{width:640px}.modal.n{width:360px}
+.mh{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);z-index:1}
+.mh-t{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--dark)}
+.mx{background:none;border:none;font-size:18px;cursor:pointer;color:var(--lgray);line-height:1;padding:4px;transition:.18s}
+.mx:hover{color:var(--dark)}
+.mb{padding:20px 22px}
+.mf{padding:13px 22px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end;background:var(--cream)}
+
+/* FORM */
+.fg{display:flex;flex-direction:column;gap:4px;margin-bottom:13px}
+.fg-r{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.flbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.11em;text-transform:uppercase;color:var(--gray)}
+.finp{padding:8px 11px;border:1px solid var(--line);background:var(--cream);font-family:'Jost',sans-serif;font-size:13px;color:var(--dark);outline:none;width:100%;border-radius:3px;transition:.18s}
+.finp:focus{border-color:var(--tan);background:var(--white)}
+textarea.finp{resize:vertical;min-height:64px}
+.finp.err{border-color:var(--red)}
+.ferr{font-size:10px;color:var(--red);display:none;margin-top:2px}
+.finp.err+.ferr{display:block}
+
+/* TOAST */
+.tbox{position:fixed;bottom:22px;right:22px;z-index:9999;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--black);color:var(--white);padding:10px 16px;font-size:12px;display:flex;align-items:center;gap:9px;min-width:220px;max-width:300px;border-radius:3px;animation:vIn .25s ease}
+.tok{border-left:3px solid var(--green)}.ter{border-left:3px solid var(--red)}.tin{border-left:3px solid var(--tan)}
+
+/* HORARIO GRID */
+.hgrid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.hday{display:flex;flex-direction:column;gap:7px}
+.hdlbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--lgray);text-align:center;padding:6px 0;border-bottom:1px solid var(--line);margin-bottom:2px}
+.hslot{background:var(--white);border:1px solid var(--line);border-left:3px solid var(--tan);transition:all .18s;border-radius:0 3px 3px 0;overflow:hidden}
+.hslot:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(12,11,9,.1)}
+.hslot.hok{border-left-color:var(--green)}.hslot.hmid{border-left-color:var(--tan)}.hslot.hhi{border-left-color:var(--red)}
+.hslot-body{padding:9px 11px;cursor:pointer}
+.hslot-acts{display:flex;gap:0;border-top:1px solid var(--line)}
+.hslot-edit{flex:1;background:none;border:none;border-right:1px solid var(--line);padding:5px 4px;font-size:10px;cursor:pointer;font-family:'DM Mono',monospace;color:var(--gray);transition:.15s}
+.hslot-edit:hover{background:var(--tan);color:#fff}
+.hslot-del{background:none;border:none;padding:5px 9px;font-size:11px;cursor:pointer;color:var(--lgray);transition:.15s}
+.hslot-del:hover{background:var(--red);color:#fff}
+.hs-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray)}.hs-name{font-size:12px;font-weight:600;color:var(--dark);margin-top:2px;line-height:1.2}
+.hs-info{font-size:11px;color:var(--gray);margin-top:3px}.hempty{border:1px dashed var(--line);padding:14px;text-align:center;font-size:11px;color:var(--lgray);border-radius:3px}
+
+/* MONITOR */
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.mcard{background:var(--white);border:1px solid var(--line);border-radius:3px;overflow:hidden;box-shadow:0 1px 8px rgba(12,11,9,.05)}
+.mch{padding:12px 15px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:flex-start}
+.mc-name{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--dark)}
+.mc-sub{font-size:11px;color:var(--lgray);margin-top:1px}
+.att-list{padding:0 15px}
+.att-row{display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--line)}
+.att-row:last-child{border:none}
+.att-name{font-size:12px;flex:1;color:var(--dark)}
+.chk-btn{width:22px;height:22px;border:1.5px solid var(--line);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;transition:.18s;flex-shrink:0;border-radius:3px;color:transparent}
+.chk-btn.yes{background:var(--green);border-color:var(--green);color:#fff}
+
+/* BOT */
+.bot-wrap{display:grid;grid-template-columns:360px 1fr;gap:16px}
+.bot-phone{background:#111;border-radius:22px;overflow:hidden;box-shadow:0 16px 50px rgba(0,0,0,.3)}
+.bot-bar{background:#0A0A0A;padding:10px 14px;display:flex;align-items:center;gap:10px}
+.bot-bar .wa-av{width:34px;height:34px;background:var(--wa);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.bot-pname{color:#fff;font-size:13px;font-weight:600}.bot-pstatus{font-size:10px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace}
+.bot-msgs{height:420px;overflow-y:auto;padding:13px 10px;display:flex;flex-direction:column;gap:8px;background:#E5DDD5}
+.bot-msgs::-webkit-scrollbar{width:3px}
+.bmsg{max-width:85%;padding:8px 11px;font-size:12px;line-height:1.55;word-break:break-word;border-radius:3px}
+.bmsg.bot{background:#fff;border-radius:0 8px 8px 8px;align-self:flex-start;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.bmsg.user{background:#DCF8C6;border-radius:8px 0 8px 8px;align-self:flex-end;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.bmsg-time{font-size:8px;color:rgba(0,0,0,.35);text-align:right;margin-top:4px;font-family:'DM Mono',monospace}
+.bot-opts{display:flex;flex-direction:column;gap:4px;margin-top:8px;border-top:1px solid rgba(0,0,0,.06);padding-top:8px}
+.bopt{background:rgba(0,102,255,.07);border:1px solid rgba(0,102,255,.18);padding:5px 9px;font-size:11px;color:#0A7CFF;cursor:pointer;text-align:center;border-radius:4px;transition:.18s}
+.bopt:hover{background:rgba(0,102,255,.14)}
+.bot-input-bar{padding:8px 10px;background:#F0F2F5;display:flex;gap:7px;align-items:center}
+.bot-input-bar input{flex:1;padding:9px 13px;border-radius:20px;border:none;font-family:'Jost',sans-serif;font-size:12px;outline:none;background:#fff}
+.bot-send{width:36px;height:36px;background:var(--wa);color:#fff;border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:.18s}
+.bot-send:hover{background:#0e7a52}
+.typing-dots{display:flex;gap:5px;padding:8px 11px;background:#fff;border-radius:0 8px 8px 8px;width:56px;align-self:flex-start;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.typing-dot{width:7px;height:7px;background:var(--tan);border-radius:50%;animation:tdot .8s ease-in-out infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,80%,100%{transform:scale(.8);opacity:.5}40%{transform:scale(1.1);opacity:1}}
+
+/* REPORTES */
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:8px;height:120px;padding:0 4px}
+.cbar{flex:1;border-radius:3px 3px 0 0;transition:.6s;cursor:default;position:relative}
+.cbar:hover::after{content:attr(data-v);position:absolute;top:-22px;left:50%;transform:translateX(-50%);background:var(--dark);color:#fff;font-family:'DM Mono',monospace;font-size:9px;padding:2px 6px;border-radius:2px;white-space:nowrap}
+.chart-labels{display:flex;gap:8px;padding:6px 4px 0}
+.chart-lbl{flex:1;text-align:center;font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray)}
+.pie-wrap{position:relative;display:flex;align-items:center;justify-content:center}
+canvas{display:block}
+
+/* PAGOS */
+.pcard{background:var(--white);border:1px solid var(--line);padding:13px 15px;display:flex;align-items:center;gap:13px;margin-bottom:8px;border-radius:3px;transition:.15s;box-shadow:0 1px 6px rgba(12,11,9,.04)}
+.pcard:hover{background:var(--cream)}
+.pcard-thumb{width:50px;height:50px;background:var(--beige);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border-radius:3px}
+.pcard-info{flex:1;min-width:0}
+.pcard-name{font-weight:600;font-size:13px}.pcard-det{font-size:11px;color:var(--lgray);margin-top:2px}
+.pcard-amt{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--dark);white-space:nowrap}
+.pcard-acts{display:flex;gap:6px;flex-shrink:0}
+
+/* NOTIF */
+.notif-item{background:var(--white);border:1px solid var(--line);padding:12px 15px;display:flex;gap:12px;align-items:flex-start;border-left:3px solid transparent;margin-bottom:7px;border-radius:0 3px 3px 0;transition:.15s}
+.notif-item:hover{background:var(--cream)}
+.nwa{border-left-color:var(--wa)}.nsys{border-left-color:var(--blue)}.npay{border-left-color:var(--green)}.nwarn{border-left-color:var(--amber)}
+.n-ico{font-size:18px;flex-shrink:0;margin-top:1px}
+.n-body{flex:1}.n-title{font-size:13px;font-weight:500}.n-desc{font-size:11px;color:var(--lgray);margin-top:2px}
+.n-time{font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);white-space:nowrap;margin-top:3px}
+
+/* CONFIG */
+.cfg-section{background:var(--white);border:1px solid var(--line);border-radius:3px;overflow:hidden;margin-bottom:16px}
+.cfg-h{padding:13px 18px;border-bottom:1px solid var(--line);background:var(--cream)}
+.cfg-t{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--dark)}
+.cfg-body{padding:18px}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line)}
+.toggle-wrap:last-child{border:none}
+.toggle-lbl{font-size:13px;color:var(--dark)}
+.toggle-sub{font-size:11px;color:var(--lgray);margin-top:1px}
+.toggle{width:38px;height:20px;background:var(--beige2);border-radius:10px;cursor:pointer;transition:.3s;position:relative;border:none;flex-shrink:0}
+.toggle.on{background:var(--green)}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;background:#fff;border-radius:50%;top:2px;left:2px;transition:.3s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.toggle.on::after{left:20px}
+
+/* RULE BOX */
+.rulebox{background:var(--abg);border:1px solid rgba(122,92,24,.15);padding:11px 14px;font-size:12px;color:var(--amber);display:flex;gap:9px;align-items:flex-start;margin-bottom:13px;border-radius:3px}
+
+/* CONFIRM MODAL */
+.confirm-txt{font-size:13px;color:var(--gray);line-height:1.65;padding:4px 0 10px}
+
+/* INFO GRID */
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);margin-bottom:14px}
+.info-cell{background:var(--white);padding:11px 13px}
+.info-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--lgray);margin-bottom:3px}
+.info-val{font-size:13px;font-weight:600;color:var(--dark)}
+
+@media(max-width:900px){
+  .sidebar{display:none}.s4,.s5{grid-template-columns:1fr 1fr}
+  .g2,.g3{grid-template-columns:1fr}.mgrid{grid-template-columns:1fr}
+  .hgrid{grid-template-columns:1fr 1fr}.bot-wrap{grid-template-columns:1fr}
+}
+
+
+/* ══ AURIS POLE TEXT LOGO ══ */
+.ap-logo{display:flex;flex-direction:column;align-items:flex-start;line-height:1;cursor:pointer;text-decoration:none}
+.ap-logo .ap-line1{font-family:'Century Gothic','Josefin Sans','Futura',Arial,sans-serif;font-size:inherit;font-weight:300;color:#fff;letter-spacing:.18em;text-transform:uppercase;line-height:1}
+.ap-logo .ap-line1 strong{font-weight:700;letter-spacing:.12em}
+.ap-logo .ap-line2{font-family:'Century Gothic','Josefin Sans','Futura',Arial,sans-serif;font-size:.42em;font-weight:400;color:rgba(255,255,255,.45);letter-spacing:.28em;text-transform:uppercase;margin-top:.3em}
+/* NAV size */
+.lp-logo .ap-logo{font-size:16px;opacity:.75}
+.lp-logo .ap-logo .ap-line1{letter-spacing:.2em;color:rgba(255,255,255,.85)}
+.lp-logo .ap-logo .ap-line2{display:none}
+/* HERO size */
+.lp-hero-logo .ap-logo{font-size:clamp(48px,8vw,88px)}
+.lp-hero-logo .ap-logo .ap-line2{color:rgba(255,255,255,.35);font-size:.28em}
+/* Sidebar size */
+.s-logo .ap-logo{font-size:18px}
+.s-logo .ap-logo .ap-line1{color:rgba(255,255,255,.92)}
+.s-logo .ap-logo .ap-line2{color:rgba(255,255,255,.28);font-size:.45em}
+
+/* ══════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════ */
+.lp{display:flex;flex-direction:column;min-height:100vh;background:#0C0B09;color:#fff;font-family:'Jost',sans-serif;overflow-x:hidden;overflow-y:auto}
+.lp-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 36px;border-bottom:1px solid rgba(255,255,255,.05);position:sticky;top:0;background:rgba(12,11,9,.88);backdrop-filter:blur(12px);z-index:100}
+.lp-logo img{height:44px;width:auto;object-fit:contain}
+.lp-nav-r{display:flex;align-items:center;gap:16px}
+.lp-loc{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.28);letter-spacing:.08em}
+.lp-admin-btn{background:none;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.15em;text-transform:uppercase;padding:6px 10px;transition:.2s}
+.lp-admin-btn:hover{color:rgba(255,255,255,.4)}
+.lp-hero{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 48px 60px;text-align:center;position:relative;}
+.lp-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%, rgba(194,168,122,.08) 0%, transparent 60%)}
+.lp-hero-tag{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--tan);margin-bottom:18px;opacity:.8}
+.lp-hero h1{font-family:'Playfair Display',Georgia,serif;font-size:clamp(2.4rem,6vw,4.8rem);font-weight:400;line-height:1.1;letter-spacing:-.01em;margin-bottom:10px}
+.lp-hero h1 em{font-style:italic;color:var(--tan)}
+.lp-hero p{font-size:15px;color:rgba(255,255,255,.5);max-width:480px;line-height:1.65;margin-bottom:32px}
+.lp-hero-loc{display:flex;align-items:center;gap:8px;font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.08em;margin-bottom:32px}
+.lp-hero-loc::before{content:'📍';font-size:14px}
+.lp-cta-wa{display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;padding:14px 32px;font-size:15px;font-weight:600;border:none;cursor:pointer;border-radius:30px;text-decoration:none;box-shadow:0 8px 30px rgba(37,211,102,.3);transition:all .25s;letter-spacing:.01em}
+.lp-cta-wa:hover{background:#1db954;transform:translateY(-2px);box-shadow:0 12px 40px rgba(37,211,102,.4)}
+.lp-cta-wa .wa-icon{font-size:20px}
+.lp-section{padding:60px 48px 40px}
+.lp-section-title{font-family:'Playfair Display',Georgia,serif;font-size:1.8rem;font-weight:400;margin-bottom:8px;text-align:center}
+.lp-section-sub{text-align:center;font-size:13px;color:rgba(255,255,255,.4);font-family:'DM Mono',monospace;letter-spacing:.07em;margin-bottom:40px}
+.lp-divider{width:40px;height:1px;background:var(--tan);margin:0 auto 40px}
+.lp-clases-grid{max-width:980px;margin:0 auto;width:100%;box-sizing:border-box;display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06)}
+/* Simple class card */
+.lp-sc{background:#0C0B09;padding:26px 24px;display:flex;flex-direction:column;gap:16px;transition:background .2s;border-left:2px solid transparent}
+.lp-sc:hover{background:#111009;border-left-color:var(--tan)}
+.lp-sc-nom{font-family:'Playfair Display',Georgia,serif;font-size:1.2rem;font-weight:400;color:#fff;line-height:1.2}
+.lp-sc-rows{display:flex;flex-direction:column;gap:8px}
+.lp-sc-row{display:flex;align-items:baseline;gap:10px}
+.lp-sc-lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.3);min-width:72px;flex-shrink:0}
+.lp-sc-val{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.7);letter-spacing:.04em}
+.lp-sc-wa{display:inline-flex;align-items:center;gap:7px;background:#25D366;color:#fff;padding:9px 18px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;border-radius:20px;transition:all .2s;align-self:flex-start;margin-top:2px}
+.lp-sc-wa:hover{background:#1db954;transform:translateY(-1px);box-shadow:0 4px 14px rgba(37,211,102,.3)}
+@media(max-width:600px){.lp-clases-grid{grid-template-columns:1fr}}
+/* removed */
+/* Header row */
+/* removed */
+/* Schedule pills */
+.lpc-dias{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.lpc-dia-pill{background:rgba(194,168,122,.1);border:1px solid rgba(194,168,122,.2);color:var(--tan);padding:3px 10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase}
+/* Details grid */
+.lpc-details{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.lpc-det-item{display:flex;flex-direction:column;gap:2px}
+.lpc-det-lbl{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+.lpc-det-val{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.65);letter-spacing:.04em}
+/* Instructor */
+.lpc-inst{display:flex;align-items:center;gap:8px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);margin-top:auto}
+.lpc-inst-av{width:28px;height:28px;border-radius:50%;background:rgba(194,168,122,.15);border:1px solid rgba(194,168,122,.25);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',Georgia,serif;font-size:11px;color:var(--tan);flex-shrink:0}
+.lpc-inst-name{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.06em}
+/* Cupo bar */
+.lpc-cupo-wrap{margin-bottom:14px}
+.lpc-cupo-bar{height:3px;background:rgba(255,255,255,.08);overflow:hidden;margin-top:5px}
+.lpc-cupo-fill{height:100%;transition:width .5s}
+.lpc-cupo-fill.ok{background:linear-gradient(90deg,#2d6a4f,#52b788)}
+.lpc-cupo-fill.mid{background:linear-gradient(90deg,var(--tan2),var(--tan))}
+.lpc-cupo-fill.hi{background:linear-gradient(90deg,#7a2525,#c1121f)}
+.lpc-cupo-txt{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;display:flex;justify-content:space-between;color:rgba(255,255,255,.3)}
+.lpc-cupo-txt .cupo-disp{color:rgba(255,255,255,.5)}
+/* Vigencia badge */
+.lpc-vig{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:4px 10px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.07em;color:rgba(255,255,255,.35);margin-top:4px}
+/* WA action */
+.lpc-action{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between}
+.lpc-action a{display:flex;align-items:center;gap:6px;background:rgba(37,211,102,.08);border:1px solid rgba(37,211,102,.2);color:#52b788;padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-decoration:none;transition:.2s}
+.lpc-action a:hover{background:rgba(37,211,102,.15);color:#3ECF6E}
+/* Empty state */
+.lpc-empty{text-align:center;grid-column:1/-1;padding:60px 20px;color:rgba(255,255,255,.2);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.14em}
+.lp-info{display:grid;grid-template-columns:1fr 1fr;gap:40px;max-width:800px;margin:0 auto;padding:60px 48px}
+.lp-info-item{text-align:center}
+.lp-info-icon{font-size:28px;margin-bottom:14px;display:block}
+.lp-info-title{font-family:'Playfair Display',Georgia,serif;font-size:1.1rem;margin-bottom:8px}
+.lp-info-desc{font-size:13px;color:rgba(255,255,255,.45);line-height:1.65}
+.lp-footer{border-top:1px solid rgba(255,255,255,.07);padding:32px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+.lp-footer-logo img{height:30px;opacity:.6}
+.lp-footer-txt{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.25);letter-spacing:.08em;line-height:2}
+/* Floating WA button */
+.wa-float{position:fixed;bottom:28px;right:28px;z-index:500;width:58px;height:58px;background:#25D366;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 24px rgba(37,211,102,.45);cursor:pointer;transition:all .25s;text-decoration:none}
+.wa-float:hover{background:#1db954;transform:scale(1.1)}
+.wa-float-pulse{position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(37,211,102,.4);animation:wapulse 2.5s ease-out infinite}
+@keyframes wapulse{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+/* Login modal */
+.login-ov{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.login-ov.on{display:flex}
+.login-box{background:#1A1714;border:1px solid rgba(255,255,255,.1);padding:40px;width:360px;max-width:92vw;text-align:center;animation:loginIn .25s ease}
+@keyframes loginIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.login-box img{height:52px;width:auto;margin-bottom:24px;opacity:.9}
+.login-box h3{font-family:'Playfair Display',Georgia,serif;font-size:1.3rem;color:#fff;font-weight:400;margin-bottom:6px}
+.login-box p{font-size:12px;color:rgba(255,255,255,.35);font-family:'DM Mono',monospace;letter-spacing:.08em;margin-bottom:24px}
+.login-input{width:100%;padding:12px 16px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;font-family:'DM Mono',monospace;font-size:20px;letter-spacing:.35em;text-align:center;outline:none;border-radius:3px;transition:.2s}
+.login-input:focus{border-color:var(--tan)}
+.login-input.shake{animation:shake .35s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.login-input.err{border-color:var(--red);background:rgba(122,37,37,.1)}
+.login-btn{width:100%;margin-top:14px;padding:11px;background:var(--tan);color:#fff;border:none;cursor:pointer;font-family:'Jost',sans-serif;font-size:14px;font-weight:600;letter-spacing:.04em;border-radius:3px;transition:.2s}
+.login-btn:hover{background:var(--tan2)}
+.login-close{margin-top:14px;background:none;border:none;color:rgba(255,255,255,.25);font-size:12px;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.08em}
+.login-close:hover{color:rgba(255,255,255,.5)}
+.login-err-msg{color:#e87070;font-size:11px;font-family:'DM Mono',monospace;margin-top:8px;min-height:16px}
+@media(max-width:768px){.lp-nav{padding:16px 22px}.lp-hero{padding:50px 22px 36px}.lp-section{padding:36px 22px 24px}.lp-info{padding:36px 22px;grid-template-columns:1fr}.lp-footer{padding:24px 22px}.lp-clases-grid{grid-template-columns:1fr!important}.lpc-details{grid-template-columns:1fr 1fr}}
+
+/* ══ LOADING SCREEN ══ */
+.fb-loading{position:fixed;inset:0;background:#0C0B09;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;transition:opacity .4s}
+.fb-loading.hide{opacity:0;pointer-events:none}
+.fb-spinner{width:36px;height:36px;border:3px solid rgba(194,168,122,.2);border-top-color:var(--tan);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.fb-loading-txt{font-family:'DM Mono',monospace;font-size:11px;color:rgba(255,255,255,.35);letter-spacing:.18em;text-transform:uppercase;transition:all .3s}
+.fb-loading-logo{font-family:'Century Gothic','Josefin Sans',Arial,sans-serif;font-size:20px;color:rgba(255,255,255,.6);letter-spacing:.2em;font-weight:300;margin-bottom:10px}
+.fb-loading-logo strong{font-weight:700;color:var(--tan)}
+
+/* ══ VISTA INSTRUCTOR/A ══ */
+.inst-shell{display:none;flex-direction:column;height:100vh;background:var(--cream);overflow:hidden}
+.inst-topbar{height:56px;background:var(--black);display:flex;align-items:center;justify-content:space-between;padding:0 24px;flex-shrink:0}
+.inst-logo{font-family:'Century Gothic','Josefin Sans',Arial,sans-serif;font-size:14px;color:rgba(255,255,255,.7);letter-spacing:.18em;font-weight:300}
+.inst-logo strong{font-weight:700;color:var(--tan)}
+.inst-user{display:flex;align-items:center;gap:12px}
+.inst-name{font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.45);letter-spacing:.08em}
+.inst-content{flex:1;overflow-y:auto;padding:28px}
+.inst-welcome{font-family:'Playfair Display',Georgia,serif;font-size:24px;font-weight:400;color:var(--dark);margin-bottom:4px}
+.inst-welcome em{font-style:italic;color:var(--tan2)}
+.inst-sub{font-size:12px;color:var(--lgray);margin-bottom:24px;font-family:'DM Mono',monospace;letter-spacing:.06em}
+.inst-section{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--lgray);margin:22px 0 10px;padding-bottom:7px;border-bottom:1px solid var(--line)}
+/* Clase card para instructor/a */
+.ic-card{background:var(--white);border:1px solid var(--line);border-left:3px solid var(--tan);margin-bottom:12px;border-radius:var(--r);overflow:hidden;box-shadow:var(--sh)}
+.ic-head{padding:14px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:.17s}
+.ic-head:hover{background:var(--cream)}
+.ic-title{font-family:'Playfair Display',Georgia,serif;font-size:16px;font-weight:400;color:var(--dark)}
+.ic-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--lgray);margin-top:2px;letter-spacing:.04em}
+.ic-badge{font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--dark)}
+.ic-alus{border-top:1px solid var(--line)}
+.ic-alu-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid var(--line);transition:.15s}
+.ic-alu-row:last-child{border:none}
+.ic-alu-row:hover{background:var(--cream)}
+.ic-alu-nom{font-size:13px;font-weight:500;color:var(--dark);flex:1}
+.ic-alu-tel{font-family:'DM Mono',monospace;font-size:11px;color:var(--lgray)}
+.ic-wa-btn{background:var(--wab);color:var(--wa);border:1px solid rgba(18,140,94,.2);padding:5px 11px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.08em;text-decoration:none;border-radius:20px;transition:.17s;white-space:nowrap;display:inline-flex;align-items:center;gap:5px}
+.ic-wa-btn:hover{background:#cce8dd}
+.ic-empty{padding:32px;text-align:center;color:var(--lgray);font-size:13px}
+
+
+
+
+
+
+
+
+
+</style>
+<!-- Firebase SDK (loaded in head = guaranteed before body scripts) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+</head>
+<body>
+<div class="shell">
+
+<!-- ════ SIDEBAR ════ -->
+<aside class="sidebar">
+  <div class="s-logo" onclick="goView('dashboard')">
+    <div class="ap-logo">
+    <div class="ap-line1">AURIS&nbsp;<strong>POLE</strong></div>
+    <div class="ap-line2">POLE DANCE STUDIO</div>
+  </div>
+  </div>
+  <div class="s-group">
+    <div class="s-lbl">Principal</div>
+    <button class="s-item on" data-v="dashboard"><span class="ico">◈</span><span class="lbl">Dashboard</span></button>
+    <button class="s-item" data-v="monitor"><span class="ico">◉</span><span class="lbl">Monitoreo Live</span></button>
+    <button class="s-item" data-v="reportes"><span class="ico">◐</span><span class="lbl">Reportes</span></button>
+  </div>
+  <div class="s-group">
+    <div class="s-lbl">Gestión</div>
+    <button class="s-item" data-v="alumnas"><span class="ico">♀</span><span class="lbl">Alumnas</span></button>
+    <button class="s-item" data-v="instructores"><span class="ico">★</span><span class="lbl">Instructores</span></button>
+    <button class="s-item" data-v="horarios"><span class="ico">◷</span><span class="lbl">Horarios</span></button>
+    <button class="s-item" data-v="reservas"><span class="ico">◻</span><span class="lbl">Reservas</span></button>
+    <button class="s-item" data-v="cancelaciones"><span class="ico">⊗</span><span class="lbl">Cancelaciones</span></button>
+  </div>
+  <div class="s-group">
+    <div class="s-lbl">Comunicación</div>
+    <button class="s-item" data-v="whatsapp"><span class="ico">💬</span><span class="lbl">Bot WhatsApp</span></button>
+    <button class="s-item" data-v="notificaciones"><span class="ico">🔔</span><span class="lbl">Notificaciones</span></button>
+  </div>
+  <div class="s-group">
+    <div class="s-lbl">Finanzas</div>
+    <button class="s-item" data-v="pagos"><span class="ico">◈</span><span class="lbl">Pagos</span><span class="s-badge" id="sb-pagos">3</span></button>
+    <button class="s-item" data-v="membresias"><span class="ico">◆</span><span class="lbl">Membresías</span></button>
+  </div>
+  <div class="s-group">
+    <div class="s-lbl">Sistema</div>
+    <button class="s-item" data-v="config"><span class="ico">⚙</span><span class="lbl">Configuración</span></button>
+  </div>
+  <div class="s-foot">
+    <div class="s-live"><span class="dot"></span>SISTEMA ACTIVO · CRM v1.0</div>
+  </div>
+</aside>
+
+<!-- ════ MAIN ════ -->
+<div class="main">
+  <div class="topbar">
+    <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:400;color:var(--dark)" id="tb-title">Dashboard</div>
+    <div class="tb-right">
+      <div class="tb-date" id="tb-date"></div>
+      <button class="btn sm bo tb-notif" id="tb-notif" onclick="goView('notificaciones')" title="Notificaciones">🔔<span class="nn" id="nn-count">5</span></button>
+      <button class="btn sm bd" id="tb-cta" onclick="ctaClick()">+ Nueva Alumna</button>
+      <div class="tb-avatar" title="Admin">A</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ════ DASHBOARD ════ -->
+    <div class="view on" id="v-dashboard">
+      <div class="ph"><div class="ph-row"><div><h2>Dashboard <em>General</em></h2><p>Resumen en tiempo real de Auris Pole Studio</p></div></div></div>
+      <div class="stats-row s4" id="dash-stats"></div>
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card"><div class="ch"><div><div class="ch-t">Clases de Hoy</div><div class="ch-s">Ocupación en tiempo real</div></div></div><div id="dash-hoy"></div></div>
+        <div class="card"><div class="ch"><div><div class="ch-t">Actividad Reciente</div><div class="ch-s">Últimas acciones del sistema</div></div></div><div id="dash-act"></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div><div class="ch-t">Pagos Pendientes</div></div><button class="btn xs bo" onclick="goView('pagos')">Ver todos</button></div><div id="dash-pagos"></div></div>
+        <div class="card"><div class="ch"><div><div class="ch-t">Alertas del Sistema</div></div></div><div id="dash-alerts"></div></div>
+      </div>
+    </div>
+
+    <!-- ════ ALUMNAS ════ -->
+    <div class="view" id="v-alumnas">
+      <div class="ph"><div class="ph-row"><div><h2>Gestión de <em>Alumnas</em></h2><p>Registro, niveles, membresías e historial completo</p></div><div class="ph-acts"><button class="btn sm bo" onclick="exportCSV()">↓ Exportar CSV</button><button class="btn sm bd" onclick="openAlumna()">+ Registrar Alumna</button></div></div></div>
+      <div class="fbar">
+        <input class="fi fi-search" type="text" placeholder="🔍  Buscar por nombre, teléfono o email…" id="srch-alu" oninput="rAlumnas()">
+        <select class="fi" id="fil-niv" onchange="rAlumnas()"><option value="">Todas las clases</option></select>
+        <select class="fi" id="fil-pago" onchange="rAlumnas()"><option value="">Estado de pago</option><option value="pagado">Pagado</option><option value="pendiente">Pendiente</option><option value="vencido">Vencido</option></select>
+        <select class="fi" id="fil-plan" onchange="rAlumnas()"><option value="">Todos los planes</option><option>Mensual</option><option>Trimestral</option><option>Anual</option></select>
+      </div>
+      <div class="card"><div class="ch"><div class="ch-t" id="alu-ct">Alumnas</div></div>
+        <div class="tw"><table><thead><tr><th>Alumna</th><th>WhatsApp</th><th>Nivel</th><th>Plan</th><th>Pago</th><th>Vigencia</th><th>Reservas</th><th>Acciones</th></tr></thead><tbody id="tb-alu"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ INSTRUCTORAS ════ -->
+    <div class="view" id="v-instructores">
+      <div class="ph"><div class="ph-row"><div><h2><em>Instructores</em></h2><p>Gestión del equipo de instructores</p></div><div class="ph-acts"><button class="btn sm bd" onclick="openInst()">+ Nuevo Instructor/a</button></div></div></div>
+      <div class="card"><div class="ch"><div class="ch-t" id="inst-ct">Instructores</div></div>
+        <div class="tw"><table><thead><tr><th>Instructor/a</th><th>Especialidad</th><th>Teléfono</th><th>Clases Asignadas</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tb-inst"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ HORARIOS ════ -->
+    <div class="view" id="v-horarios">
+      <div class="ph"><div class="ph-row"><div><h2>Control de <em>Horarios</em></h2><p>Clases semanales · Cupos por tubo · Instructores asignadas</p></div><div class="ph-acts">
+        <div style="display:flex;gap:10px;align-items:center;font-size:11px;color:var(--lgray)">
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--green);border-radius:1px;display:inline-block"></span>Disponible</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--tan);border-radius:1px;display:inline-block"></span>Casi llena</span>
+          <span style="display:flex;align-items:center;gap:4px"><span style="width:8px;height:8px;background:var(--red);border-radius:1px;display:inline-block"></span>Sin cupos</span>
+        </div>
+        <button class="btn sm bd" onclick="openClase()">+ Nueva Clase</button>
+      </div></div></div>
+      <div class="hgrid" id="hgrid"></div>
+    </div>
+
+    <!-- ════ RESERVAS ════ -->
+    <div class="view" id="v-reservas">
+      <div class="ph"><div class="ph-row"><div><h2><em>Reservas</em></h2><p>Agendamiento con validación anti-overbooking en tiempo real</p></div><div class="ph-acts"><button class="btn sm bd" onclick="openReserva()">+ Nueva Reserva</button></div></div></div>
+      <div class="tabs" id="tabs-res">
+        <button class="tab on" onclick="setTabRes('todas',this)">Todas</button>
+        <button class="tab" onclick="setTabRes('confirmada',this)">Confirmadas</button>
+        <button class="tab" onclick="setTabRes('pendiente',this)">Pendientes</button>
+        <button class="tab" onclick="setTabRes('cancelada',this)">Canceladas</button>
+      </div>
+      <div class="card"><div class="ch"><div class="ch-t" id="res-ct">Reservas</div><input class="fi" style="max-width:200px" type="text" placeholder="🔍 Buscar…" oninput="srchRes(this.value)" id="srch-res"></div>
+        <div class="tw"><table><thead><tr><th>Alumna</th><th>Clase</th><th>Día / Hora</th><th>Estado</th><th>Origen</th><th>Fecha</th><th>Acciones</th></tr></thead><tbody id="tb-res"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ CANCELACIONES ════ -->
+    <div class="view" id="v-cancelaciones">
+      <div class="ph"><div class="ph-row"><div><h2>Reglas de <em>Cancelación</em></h2><p>Políticas e historial de cancelaciones procesadas</p></div></div></div>
+      <div class="stats-row s3" style="margin-bottom:16px">
+        <div class="scard c1"><div class="scard-n" id="can-n1">2h</div><div class="scard-l">Ventana mínima de cancelación</div><div class="scard-s">ANTES DEL INICIO DE CLASE</div></div>
+        <div class="scard c2"><div class="scard-n" id="can-n2">0</div><div class="scard-l">Cancelaciones a tiempo hoy</div><div class="scard-s">CUPOS LIBERADOS</div></div>
+        <div class="scard c4"><div class="scard-n" id="can-n3">0</div><div class="scard-l">Cancelaciones tardías</div><div class="scard-s">FUERA DE VENTANA · COBRO APLICADO</div></div>
+      </div>
+      <div class="rulebox"><span style="font-size:16px;flex-shrink:0">⚠</span><div><strong>Regla vigente:</strong> Las cancelaciones se permiten con <strong>mínimo 2 horas de anticipación</strong>. Si se cancela fuera de ese margen, el cupo <strong>no se libera</strong> y el cobro aplica igual. Al cancelar a tiempo, el cupo se libera automáticamente y se notifica a la primera alumna en lista de espera vía WhatsApp.</div></div>
+      <div class="card"><div class="ch"><div class="ch-t">Historial de Cancelaciones</div></div>
+        <div class="tw"><table><thead><tr><th>Alumna</th><th>Clase</th><th>Hora Clase</th><th>Canceló</th><th>¿A tiempo?</th><th>Cupo liberado</th><th>Fecha</th></tr></thead><tbody id="tb-can"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ MONITOR ════ -->
+    <div class="view" id="v-monitor">
+      <div class="ph"><div class="ph-row"><div><h2>Monitoreo <em>en Vivo</em></h2><p>Asistencia del día · Check-in en tiempo real</p></div>
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;background:#3ECF6E;border-radius:50%;display:inline-block;animation:blink 2s infinite"></span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--lgray)">TIEMPO REAL</span></div>
+      </div></div>
+      <div class="mgrid" id="mgrid"></div>
+    </div>
+
+    <!-- ════ WHATSAPP BOT ════ -->
+    <div class="view" id="v-whatsapp">
+      <div class="ph"><div class="ph-row"><div><h2>Bot <em>WhatsApp</em></h2><p>Simulador del flujo de automatización · Reservas sin intervención humana</p></div>
+        <div class="ph-acts"><button class="btn sm bo" onclick="resetBot()">↺ Reiniciar Chat</button></div>
+      </div></div>
+      <div class="bot-wrap">
+        <div>
+          <div class="bot-phone">
+            <div class="bot-bar">
+              <div class="wa-av">W</div>
+              <div><div class="bot-pname">Auris Pole Studio</div><div class="bot-pstatus" id="bot-status">en línea</div></div>
+            </div>
+            <div class="bot-msgs" id="bot-msgs"></div>
+            <div class="bot-input-bar">
+              <input type="text" id="bot-input" placeholder="Escribe un mensaje…" onkeydown="if(event.key==='Enter')sendBotText()">
+              <button class="bot-send" onclick="sendBotText()">➤</button>
+            </div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);text-align:center;margin-top:7px">SIMULADOR LOCAL · NO CONECTADO A WHATSAPP REAL</div>
+          <button class="btn sm bo full" style="margin-top:8px" onclick="resetBot()">↺ Reiniciar Conversación</button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div class="card"><div class="ch"><div class="ch-t">Flujo del Bot</div><div class="ch-s">Capacidades automáticas</div></div>
+            <div id="bot-flow" style="padding:0 18px"></div>
+          </div>
+          <div class="card"><div class="ch"><div class="ch-t">Reservas vía WhatsApp</div></div>
+            <div class="tw"><table><thead><tr><th>Alumna</th><th>Clase</th><th>Estado</th><th>Fecha</th></tr></thead><tbody id="tb-wa"></tbody></table></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ NOTIFICACIONES ════ -->
+    <div class="view" id="v-notificaciones">
+      <div class="ph"><div class="ph-row"><div><h2><em>Notificaciones</em></h2><p>Recordatorios automáticos, confirmaciones y alertas del sistema</p></div>
+        <div class="ph-acts"><button class="btn sm bd" onclick="enviarRecords()">📤 Enviar Recordatorios</button></div>
+      </div></div>
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card"><div class="ch"><div class="ch-t">Reglas Automáticas</div></div><div id="notif-reglas" style="padding:0 18px"></div></div>
+        <div class="card"><div class="ch"><div class="ch-t">Estadísticas Hoy</div></div><div id="notif-stats" style="padding:18px"></div></div>
+      </div>
+      <div class="card"><div class="ch"><div class="ch-t">Historial de Notificaciones</div></div><div style="padding:14px 18px" id="notif-hist"></div></div>
+    </div>
+
+    <!-- ════ PAGOS ════ -->
+    <div class="view" id="v-pagos">
+      <div class="ph"><div class="ph-row"><div><h2>Gestión de <em>Pagos</em></h2><p>Verificación de comprobantes enviados vía WhatsApp</p></div></div></div>
+      <div class="tabs">
+        <button class="tab on" onclick="setTabPago('pendiente',this)">Pendientes <span id="pend-ct"></span></button>
+        <button class="tab" onclick="setTabPago('verificado',this)">Verificados</button>
+        <button class="tab" onclick="setTabPago('rechazado',this)">Rechazados</button>
+        <button class="tab" onclick="setTabPago('todos',this)">Todos</button>
+      </div>
+      <div id="lista-pagos"></div>
+    </div>
+
+    <!-- ════ MEMBRESÍAS ════ -->
+    <div class="view" id="v-membresias">
+      <div class="ph"><div class="ph-row"><div><h2><em>Membresías</em></h2><p>Planes disponibles y gestión de vencimientos</p></div><div class="ph-acts"><button class="btn sm bd" onclick="openPaquete()">+ Nuevo Paquete</button></div></div></div>
+      <div class="g3" id="planes-grid" style="margin-bottom:20px"></div>
+      <div class="card"><div class="ch"><div class="ch-t">Alumnas con Membresía Próxima a Vencer</div><div class="ch-s">Próximos 7 días</div></div>
+        <div class="tw"><table><thead><tr><th>Alumna</th><th>Plan</th><th>Vence</th><th>Días Restantes</th><th>Acción</th></tr></thead><tbody id="tb-mem"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- ════ REPORTES ════ -->
+    <div class="view" id="v-reportes">
+      <div class="ph"><div class="ph-row"><div><h2><em>Reportes</em> & Analytics</h2><p>Métricas de ingresos, ocupación y retención</p></div></div></div>
+      <div class="stats-row s4" id="rep-stats"></div>
+      <div class="g2" style="margin-bottom:16px">
+        <div class="card"><div class="ch"><div class="ch-t">Ingresos por Mes (USD)</div></div><div style="padding:18px"><div class="chart-bar-wrap" id="chart-ingresos"></div><div class="chart-labels" id="chart-meses"></div></div></div>
+        <div class="card"><div class="ch"><div class="ch-t">Ocupación por Clase</div></div><div style="padding:18px"><div class="chart-bar-wrap" id="chart-ocup"></div><div class="chart-labels" id="chart-clases-lbl"></div></div></div>
+      </div>
+      <div class="g2">
+        <div class="card"><div class="ch"><div class="ch-t">Distribución por Nivel</div></div>
+          <div style="padding:18px;display:flex;gap:20px;align-items:center;flex-wrap:wrap" id="nivel-dist"></div>
+        </div>
+        <div class="card"><div class="ch"><div class="ch-t">Fuente de Reservas</div></div>
+          <div style="padding:18px" id="fuente-dist"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ CONFIGURACIÓN ════ -->
+    <div class="view" id="v-config">
+      <div class="ph"><div class="ph-row"><div><h2><em>Configuración</em> del Sistema</h2><p>Parámetros del estudio, notificaciones y reglas de negocio</p></div></div></div>
+      <div class="g2">
+        <div>
+          <div class="cfg-section"><div class="cfg-h"><div class="cfg-t">Datos del Estudio</div></div><div class="cfg-body">
+            <div class="fg"><label class="flbl">Nombre del Estudio</label><input class="finp" value="Auris Pole Dance Studio" id="cfg-nombre"></div>
+            <div class="fg"><label class="flbl">Número WhatsApp Business (con código país)</label><input class="finp" value="+593 98 452 1543" id="cfg-tel" oninput="updateWALinks(this.value)" placeholder="+593XXXXXXXXX"></div>
+            <div class="fg"><label class="flbl">Ciudad</label><input class="finp" value="Cuenca, Ecuador" id="cfg-ciudad"></div>
+            <div class="fg"><label class="flbl">Email de Contacto</label><input class="finp" value="info@aurispole.com" id="cfg-email"></div>
+            <div class="fg"><label class="flbl">Número de Tubos (cupo base)</label><input class="finp" type="number" value="8" id="cfg-tubos"></div>
+            <button class="btn sm bd" onclick="saveConfig()">Guardar Cambios</button>
+          </div></div>
+          <div class="cfg-section" style="margin-top:14px"><div class="cfg-h"><div class="cfg-t">Reglas de Negocio</div></div><div class="cfg-body">
+            <div class="fg"><label class="flbl">Horas mínimas para cancelar</label><input class="finp" type="number" value="2" id="cfg-horas"></div>
+            <div class="fg"><label class="flbl">Horas para recordatorio antes de clase</label><input class="finp" type="number" value="24" id="cfg-record"></div>
+            <div class="fg"><label class="flbl">Horas límite para pago pendiente</label><input class="finp" type="number" value="24" id="cfg-pago-lim"></div>
+            <div class="fg"><label class="flbl">Pago Único de Inscripción (USD)</label><input class="finp" type="number" value="30" id="cfg-inscripcion-fee"></div>
+            <button class="btn sm bd" onclick="saveConfig()">Guardar Reglas</button>
+          </div></div>
+        </div>
+        <div>
+          <div class="cfg-section"><div class="cfg-h"><div class="cfg-t">Notificaciones Automáticas</div></div><div class="cfg-body" id="cfg-notifs"></div></div>
+          <div class="cfg-section" style="margin-top:14px"><div class="cfg-h"><div class="cfg-t">Planes de Membresía Activos</div></div><div class="cfg-body" id="cfg-planes"></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /shell -->
+
+<!-- ════ MODAL ALUMNA ════ -->
+<div class="ov" id="ov-alu"><div class="modal">
+  <div class="mh"><div class="mh-t" id="ma-t">Registrar Alumna</div><button class="mx" onclick="closeOv('ov-alu')">✕</button></div>
+  <div class="mb">
+    <div class="fg-r">
+      <div class="fg" style="grid-column:span 2"><label class="flbl">Nombre Completo *</label><input class="finp" id="a-nom" placeholder="Ej: Valentina García"><span class="ferr">Campo obligatorio</span></div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Teléfono WhatsApp *</label><input class="finp" id="a-tel" placeholder="+593 99 000 0000"><span class="ferr">Campo obligatorio</span></div>
+      <div class="fg"><label class="flbl">Email</label><input class="finp" id="a-email" type="email" placeholder="correo@ejemplo.com"></div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Clase de Interés</label><select class="finp" id="a-niv"><option value="">— Seleccionar —</option></select></div>
+      <div class="fg"><label class="flbl">Plan de Membresía</label><select class="finp" id="a-plan"><option>Mensual</option><option>Trimestral</option><option>Anual</option></select></div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Estado de Pago</label><select class="finp" id="a-pago"><option value="pagado">Pagado</option><option value="pendiente">Pendiente</option><option value="vencido">Vencido</option></select></div>
+      <div class="fg"><label class="flbl">Fecha de Inscripción</label><input class="finp" id="a-fecha" type="date"></div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Válida Hasta</label><input class="finp" id="a-hasta" type="date"></div>
+      <div class="fg"><label class="flbl">Referida por</label><input class="finp" id="a-ref" placeholder="Opcional"></div>
+    </div>
+    <div class="fg"><label class="flbl">Notas / Observaciones</label><textarea class="finp" id="a-notas" placeholder="Lesiones, preferencias, historial médico relevante…"></textarea></div>
+  </div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-alu')">Cancelar</button><button class="btn sm bd" onclick="saveAlumna()">Guardar Alumna</button></div>
+</div></div>
+
+<!-- ════ MODAL INSTRUCTORA ════ -->
+<div class="ov" id="ov-inst"><div class="modal n">
+  <div class="mh"><div class="mh-t" id="mi-t">Nuevo Instructor/a</div><button class="mx" onclick="closeOv('ov-inst')">✕</button></div>
+  <div class="mb">
+    <div class="fg"><label class="flbl">Nombre Completo *</label><input class="finp" id="i-nom" placeholder="Nombre completo"></div>
+    <div class="fg"><label class="flbl">Especialidad</label><input class="finp" id="i-esp" placeholder="Ej: Pole Sport, Exotic, Stretching"></div>
+    <div class="fg"><label class="flbl">Teléfono</label><input class="finp" id="i-tel" placeholder="+593 99 000 0000"></div>
+    <div class="fg"><label class="flbl">Email</label><input class="finp" id="i-email" type="email" placeholder="correo@ejemplo.com"></div>
+    <div class="fg"><label class="flbl">Estado</label><select class="finp" id="i-est"><option value="activa">Activa</option><option value="inactiva">Inactiva</option></select></div>
+  </div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-inst')">Cancelar</button><button class="btn sm bd" onclick="saveInst()">Guardar</button></div>
+</div></div>
+
+<!-- ════ MODAL CLASE ════ -->
+<div class="ov" id="ov-clase"><div class="modal w">
+  <div class="mh"><div class="mh-t" id="mc-t">Nueva Clase</div><button class="mx" onclick="closeOv('ov-clase')">✕</button></div>
+  <div class="mb">
+    <div class="fg"><label class="flbl">Nombre / Tipo de Clase *</label><input class="finp" id="c-nom" placeholder="Ej: Pole Básico, Exotic Flow, Stretching…"></div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Instructor/a *</label><select class="finp" id="c-inst"></select></div>
+      <div class="fg"><label class="flbl">Hora de Inicio</label><input class="finp" type="time" id="c-hora" value="18:00"></div>
+    </div>
+    <div class="fg"><label class="flbl">Días de la semana *</label>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:5px" id="c-dias-wrap">
+        <label class="dia-chk"><input type="checkbox" value="Lunes"><span>Lun</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Martes"><span>Mar</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Miércoles"><span>Mié</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Jueves"><span>Jue</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Viernes"><span>Vie</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Sábado"><span>Sáb</span></label>
+        <label class="dia-chk"><input type="checkbox" value="Domingo"><span>Dom</span></label>
+      </div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Duración vigencia</label>
+        <select class="finp" id="c-meses">
+          <option value="1">1 mes</option><option value="2">2 meses</option>
+          <option value="3">3 meses</option><option value="4">4 meses</option>
+          <option value="6">6 meses</option><option value="12">12 meses</option>
+          <option value="0">Sin vencimiento</option>
+        </select>
+      </div>
+      <div class="fg"><label class="flbl">Clases por mes</label>
+        <input class="finp" type="number" id="c-clases-mes" value="8" min="1" max="30" placeholder="Ej: 8">
+      </div>
+    </div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Cupos Máximos (N° tubos) *</label><input class="finp" type="number" id="c-cupos" value="6" min="1" max="20"></div>
+      <div class="fg"><label class="flbl">Duración sesión (min)</label><input class="finp" type="number" id="c-dur" value="90"></div>
+    </div>
+    <div class="fg"><label class="flbl">Precio por clase (USD)</label><input class="finp" type="number" id="c-precio" value="15" step="0.50"></div>
+    <div id="c-resumen" style="background:var(--cream);padding:10px 13px;font-size:12px;color:var(--gray);border-radius:3px;margin-top:2px;display:none"></div>
+  </div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-clase')">Cancelar</button><button class="btn sm bd" id="save-cla-btn" onclick="saveClase()">Crear Clase</button></div>
+</div></div>
+
+<!-- ════ MODAL RESERVA ════ -->
+<div class="ov" id="ov-res"><div class="modal">
+  <div class="mh"><div class="mh-t">Nueva Reserva</div><button class="mx" onclick="closeOv('ov-res')">✕</button></div>
+  <div class="mb">
+    <div class="rulebox"><span style="font-size:14px">⚡</span><div>Se validarán los cupos disponibles en tiempo real antes de confirmar la reserva (anti-overbooking).</div></div>
+    <div class="fg"><label class="flbl">Alumna *</label><select class="finp" id="r-alu"></select></div>
+    <div class="fg"><label class="flbl">Clase *</label><select class="finp" id="r-cla" onchange="checkCupos()"></select></div>
+    <div id="cupos-info" style="display:none;margin-bottom:13px"></div>
+    <div class="fg-r">
+      <div class="fg"><label class="flbl">Fecha</label><input class="finp" type="date" id="r-fecha"></div>
+      <div class="fg"><label class="flbl">Estado</label><select class="finp" id="r-est"><option value="confirmada">Confirmada</option><option value="pendiente">Pendiente de Pago</option></select></div>
+    </div>
+    <div class="fg"><label class="flbl">Origen</label><select class="finp" id="r-ori"><option value="Admin">Admin (Manual)</option><option value="WhatsApp">WhatsApp</option></select></div>
+    <div class="fg"><label class="flbl">Notas</label><input class="finp" id="r-notas" placeholder="Opcional"></div>
+  </div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-res')">Cancelar</button><button class="btn sm bd" onclick="saveReserva()">Crear Reserva</button></div>
+</div></div>
+
+<!-- ════ MODAL PLAN (obsoleto — reemplazado por Paquetes) ════ -->
+
+<!-- ════ MODAL DETALLE ════ -->
+<div class="ov" id="ov-det"><div class="modal w">
+  <div class="mh"><div class="mh-t" id="det-t">Detalle</div><button class="mx" onclick="closeOv('ov-det')">✕</button></div>
+  <div class="mb" id="det-body"></div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-det')">Cerrar</button></div>
+</div></div>
+
+<!-- ════ MODAL CONFIRMAR ════ -->
+<div class="ov" id="ov-conf"><div class="modal n">
+  <div class="mh"><div class="mh-t" id="conf-t">Confirmar</div><button class="mx" onclick="closeOv('ov-conf')">✕</button></div>
+  <div class="mb"><p class="confirm-txt" id="conf-msg"></p></div>
+  <div class="mf"><button class="btn sm bo" onclick="closeOv('ov-conf')">Cancelar</button><button class="btn sm bd" id="conf-ok">Confirmar</button></div>
+</div></div>
+
+<div class="tbox" id="toasts"></div>
+<script>
+// ══════════════════════════════════════════════════════════════
+//  SISTEMA DE ROLES: ADMIN / INSTRUCTOR/A
+// ══════════════════════════════════════════════════════════════
+var currentRole='admin'; // 'admin' o 'instructor'
+var currentInst=null;    // objeto instructora activa
+
+function setLoginRole(role){
+  currentRole=role;
+  var btnA=document.getElementById('role-admin');
+  var btnI=document.getElementById('role-inst');
+  var hint=document.getElementById('login-hint-txt');
+  var inp=document.getElementById('login-code');
+  var btnM=document.getElementById('login-btn-main');
+  if(btnA)btnA.classList.toggle('active',role==='admin');
+  if(btnI)btnI.classList.toggle('active',role==='instructor');
+  if(role==='admin'){
+    if(hint)hint.textContent='CÓDIGO DE ACCESO ADMIN';
+    if(inp)inp.placeholder='••••••';
+    if(btnM)btnM.textContent='Ingresar al CRM';
+  }else{
+    if(hint)hint.textContent='ÚLTIMOS 5 DÍGITOS DE TU TELÉFONO';
+    if(inp)inp.placeholder='Ej: 21543';
+    if(btnM)btnM.textContent='Entrar como Instructor/a';
+  }
+  if(inp){inp.value='';inp.focus();}
+  var err=document.getElementById('login-err');
+  if(err)err.textContent='';
+}
+
+function checkLogin(){
+  var code=document.getElementById('login-code').value.trim();
+  var inp=document.getElementById('login-code');
+  var err=document.getElementById('login-err');
+  if(!code){if(err)err.textContent='Ingresa tu código.';return;}
+
+  if(currentRole==='admin'){
+    var stored=getAccessCode();
+    if(code.toUpperCase()===stored.toUpperCase()){
+      closeLogin();
+      showLoading('Cargando datos…');
+      var adminDone=false;
+      var adminTimer=setTimeout(function(){if(!adminDone){adminDone=true;hideLoading();showCRM();}},5500);
+      fsLoadAll()
+        .then(function(){if(!adminDone){adminDone=true;clearTimeout(adminTimer);hideLoading();showCRM();}})
+        .catch(function(){if(!adminDone){adminDone=true;clearTimeout(adminTimer);hideLoading();showCRM();}});
+    } else {
+      shakeError(inp,err,'Código incorrecto. Intenta de nuevo.');
+    }
+
+  } else {
+    // Instructor/a — buscar por últimos 5 dígitos del teléfono
+    var digits=code.replace(/[^0-9]/g,'');
+    var found=null;
+    for(var ii=0;ii<DB.instructores.length;ii++){
+      if(aluCode(DB.instructores[ii].tel)===digits){found=DB.instructores[ii];break;}
+    }
+    if(found){
+      currentInst=found;
+      closeLogin();
+      showLoading('Cargando tus clases…');
+      var instDone=false;
+      var instTimer=setTimeout(function(){if(!instDone){instDone=true;hideLoading();showInstView();}},5500);
+      fsLoadAll()
+        .then(function(){if(!instDone){instDone=true;clearTimeout(instTimer);hideLoading();showInstView();}})
+        .catch(function(){if(!instDone){instDone=true;clearTimeout(instTimer);hideLoading();showInstView();}});
+    } else {
+      shakeError(inp,err,'Código no encontrado. Ingresa los últimos 5 dígitos de tu teléfono registrado.');
+    }
+  }
+}
+
+function shakeError(inp,err,msg){
+  inp.classList.add('err');
+  err.textContent=msg;
+  setTimeout(function(){
+    inp.classList.add('shake');
+    setTimeout(function(){inp.classList.remove('shake');},400);
+  },50);
+  setTimeout(function(){inp.classList.remove('err');err.textContent='';},2800);
+  var btn=document.getElementById('login-btn-main');
+  if(btn){var orig=btn.textContent;btn.textContent='Código incorrecto';setTimeout(function(){btn.textContent=orig;},2000);}
+}
+
+// ══ Vista Instructor/a ════════════════════════════════════════
+function showInstView(){
+  // Ocultar todo lo demás
+  var lp=document.getElementById('landing-page');
+  var wa=document.getElementById('wa-float-btn');
+  var sh=document.querySelector('.shell');
+  var inst=document.getElementById('inst-shell');
+  if(lp)lp.style.display='none';
+  if(wa)wa.style.display='none';
+  if(sh)sh.style.display='none';
+  if(inst){inst.classList.add('on');inst.style.display='flex';}
+  document.body.style.overflow='hidden';
+  // Nombre y fecha
+  var nom=currentInst?currentInst.nom:'Instructor/a';
+  var n1=document.getElementById('inst-name-top');
+  var n2=document.getElementById('inst-welcome-name');
+  var sub=document.getElementById('inst-sub-date');
+  if(n1)n1.textContent=nom;
+  if(n2)n2.textContent=nom.split(' ')[0];
+  if(sub){
+    var d=new Date();
+    var dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    var meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    sub.textContent=dias[d.getDay()]+', '+d.getDate()+' '+meses[d.getMonth()]+' '+d.getFullYear();
+  }
+  renderInstClases();
+  // Listener de asistencia — delegado en el contenedor
+  var wrap = document.getElementById('inst-clases');
+  if(wrap){
+    wrap.removeEventListener('click', _asistHandler);
+    wrap.addEventListener('click', _asistHandler);
+  }
+}
+
+
+
+function renderInstClases(){
+  var wrap=document.getElementById('inst-clases');
+  if(!wrap||!currentInst)return;
+  // Clases de este instructor/a
+  var misClases=DB.clases.filter(function(c){return c.inst===currentInst.id;});
+  if(!misClases.length){
+    wrap.innerHTML='<div class="ic-empty">No tienes clases asignadas actualmente.</div>';
+    return;
+  }
+  var waNum=localStorage.getItem('ap_wa_num')||'593984521543';
+  var html='';
+  misClases.forEach(function(c){
+    // Reservas activas de esta clase
+    var resC=DB.reservas.filter(function(r){return r.cla===c.id&&r.est!=='cancelada';});
+    var pct=c.cupos>0?Math.round(c.ins/c.cupos*100):0;
+    var pfc=pct>=100?'hi':pct>=80?'mid':'ok';
+    var dias=Array.isArray(c.dias)&&c.dias.length?c.dias.join(' · '):(c.dia||'—');
+    html+='<div class="ic-card">';
+    html+='<div class="ic-head">';
+    html+='<div><div class="ic-title">'+c.nom+'</div>';
+    html+='<div class="ic-meta">'+dias+' · '+c.hora+'h · '+c.dur+'min</div></div>';
+    html+='<div style="text-align:right"><div class="ic-badge">'+c.ins+'/'+c.cupos+'</div>';
+    html+='<div class="prog" style="width:80px;margin-top:4px"><div class="pf '+pfc+'" style="width:'+pct+'%"></div></div></div>';
+    html+='</div>'; // ic-head
+    // Lista de alumnas
+    if(resC.length){
+      html+='<div class="ic-alus">';
+      resC.forEach(function(r){
+        var a=getAlu(r.alu);
+        if(!a)return;
+        var waMsg=encodeURIComponent('Hola '+a.nom.split(' ')[0]+'! Te escribe '+currentInst.nom+' de Auris Pole Studio 🌟');
+        html+='<div class="ic-alu-row">';
+        html+='<div class="av" style="width:28px;height:28px;font-size:10px">'+ini(a.nom)+'</div>';
+        html+='<div style="flex:1"><div class="ic-alu-nom">'+a.nom+'</div>';
+        html+='<div class="ic-alu-tel">'+a.tel+'</div></div>';
+        html+='<a class="ic-wa-btn" href="https://wa.me/'+a.tel.replace(/[^0-9]/g,'')+'?text='+waMsg+'" target="_blank">';
+        html+='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>';
+        html+='WhatsApp</a>';
+        html+='</div>';
+      });
+      html+='</div>'; // ic-alus
+    } else {
+      html+='<div class="ic-empty" style="padding:14px 18px;font-size:12px">Sin alumnas inscritas actualmente</div>';
+    }
+    html+='</div>'; // ic-card
+  });
+  wrap.innerHTML=html;
+}
+
+
+// ── Asistencia ────────────────────────────────────────────────
+
+
+
+
+// ── Membership helpers ─────────────────────────────────────────
+function getMemStatus(alu){
+  if(!alu) return 'sin_cuenta';
+  var hoy=new Date(); hoy.setHours(0,0,0,0);
+  var hasta=alu.hasta?new Date(alu.hasta):null;
+  if(hasta) hasta.setHours(23,59,59,0);
+  if(!hasta||hasta<hoy) return 'vencida';
+  var diasLeft=Math.ceil((hasta-hoy)/86400000);
+  if(diasLeft<=7) return 'por_vencer';
+  return 'activa';
+}
+function canReserve(alu){
+  // Puede reservar si membresía activa O pago pendiente (no vencida)
+  var st=getMemStatus(alu);
+  return st==='activa'||st==='por_vencer';
+}
+function calcPrecioPaquete(paq, frec){
+  if(!paq||!frec) return 0;
+  var base=paq.precioMes*frec.meses;
+  var desc=frec.descuento||0;
+  return Math.round(base*(1-desc/100));
+}
+function fmtPrecioPaq(paq, frec){
+  var total=calcPrecioPaquete(paq,frec);
+  return '$'+total.toFixed(0)+' USD ('+frec.nom+' · '+frec.descuento+'% desc.)';
+}
+function getPaqById(id){ return (DB.paquetes||[]).find(function(p){return p.id===id;}); }
+function getFrecById(id){ return (DB.frecuencias||[]).find(function(f){return f.id===id;}); }
+
+function _finalizarInscripcion(){
+  var paqS=botCtx.paqSel||{};
+  var frecS=botCtx.frecSel||{_frecMeses:1,_frecTotal:0,_frecNom:'Mensual'};
+  var inscF=+(($('cfg-inscripcion-fee')?.value)||30);
+  var totalFin=(frecS._frecTotal||0)+inscF;
+  var fin=new Date();fin.setMonth(fin.getMonth()+(frecS._frecMeses||1));
+  var newA={
+    id:'a'+DB.ids.alu++,nom:botCtx.nom||'Nueva',
+    tel:botCtx.tel||'—',email:botCtx.email||'',
+    niv:paqS._paqNom||'—',
+    plan:(paqS._paqNom||'Básico')+' · '+(frecS._frecNom||'Mensual'),
+    pago:'pendiente',
+    notas:'Emergencia: '+(botCtx.emerg||'—')+' | Via Bot',
+    desde:today(),hasta:fin.toISOString().slice(0,10),ref:'',
+    clasesRestantes:(paqS._paqCls||0)*(frecS._frecMeses||1),
+    clasesTotal:(paqS._paqCls||0)*(frecS._frecMeses||1),
+    paqId:paqS._paqId||''
+  };
+  DB.alumnas.push(newA);fsSave('alumnas',newA);botCtx.alu=newA;botCtx.isNueva=false;
+  DB.pagos.push({id:'p'+DB.ids.pago++,alu:newA.id,cla:'inscripcion',
+    monto:totalFin,est:'pendiente',fecha:today(),
+    desc:'Inscripción + '+newA.plan});
+  fsSave('pagos',DB.pagos[DB.pagos.length-1]);
+  addNotif('sys','Nueva alumna via bot',newA.nom+' — '+newA.plan);
+  actualizarBadges();
+  botState='idle';
+  var cfg=DB.botConfig||{};
+  botReply(
+    '🎉 *¡Inscripción completada!*\n\n'+
+    '👤 *'+newA.nom+'*\n'+
+    '📱 '+botCtx.tel+'  📧 '+(botCtx.email||'—')+'\n\n'+
+    '📦 *'+paqS._paqNom+'*\n'+
+    '• '+(paqS._paqCls||0)+' clases/mes · '+frecS._frecNom+'\n'+
+    '• Válido hasta: *'+fmtD(newA.hasta)+'*\n\n'+
+    '💰 *A pagar:*\n'+
+    '• Inscripción (1 vez): $'+inscF+' USD\n'+
+    '• Plan '+frecS._frecNom+': $'+(frecS._frecTotal||0)+' USD\n'+
+    '• *Total: $'+totalFin+' USD*\n\n'+
+    '⏳ Pago pendiente · Puedes reservar de inmediato.\n'+
+    'Envíanos el comprobante 📲',
+    [{lbl:'📅 Reservar mi primera clase',act:'ver_clases'},
+     {lbl:'💳 Enviar comprobante',act:'pago'}]
+  );
+}
+function logoutInst(){
+  currentInst=null;currentRole='admin';
+  var inst=document.getElementById('inst-shell');
+  if(inst)inst.classList.remove('on');
+  document.body.style.overflow='';
+  showLanding();
+  // Reset role button to admin
+  setLoginRole('admin');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  FIREBASE CONFIGURATION & INITIALIZATION
+// ═══════════════════════════════════════════════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAuG63VheZJF-vKGSdwQEOzl4yjPcv1y_k",
+  authDomain: "aurispole-1b909.firebaseapp.com",
+  projectId: "aurispole-1b909",
+  storageBucket: "aurispole-1b909.firebasestorage.app",
+  messagingSenderId: "140004755979",
+  appId: "1:140004755979:web:236e6b5b82878e76da950e"
+};
+firebase.initializeApp(firebaseConfig);
+const FSdb = firebase.firestore();
+
+// ── Loading screen helpers ─────────────────────────────────────
+function showLoading(txt){
+  var el=document.getElementById('fb-loading');
+  if(!el)return;
+  el.style.display='flex';el.classList.remove('hide');
+  var t=el.querySelector('.fb-loading-txt');if(t&&txt)t.textContent=txt;
+}
+function hideLoading(){
+  var el=document.getElementById('fb-loading');
+  if(!el)return;
+  el.classList.add('hide');
+  setTimeout(function(){el.style.display='none';},450);
+}
+
+// ── Firestore write helpers (fire & forget) ────────────────────
+function fsSave(col,data){
+  if(!data||!data.id)return;
+  FSdb.collection(col).doc(String(data.id)).set(data)
+    .catch(function(e){console.warn('Firestore save ('+col+'):', e.message);});
+}
+function fsDelete(col,id){
+  FSdb.collection(col).doc(String(id)).delete()
+    .catch(function(e){console.warn('Firestore delete ('+col+'):', e.message);});
+}
+function fsUpdate(col,id,fields){
+  FSdb.collection(col).doc(String(id)).update(fields)
+    .catch(function(e){console.warn('Firestore update ('+col+'):', e.message);});
+}
+
+// ── Load one Firestore collection into DB ──────────────────────
+async function fsLoadCol(col,dbKey){
+  try{
+    var snap=await FSdb.collection(col).get();
+    if(!snap.empty){
+      DB[dbKey]=snap.docs.map(function(d){var o=d.data();o.id=d.id;return o;});
+      return true;
+    }
+    return false;
+  }catch(e){console.warn('fsLoadCol ('+col+'):', e.message);return false;}
+}
+
+// ── Load all data from Firestore ──────────────────────────────
+async function fsLoadAll(){
+  // Timeout: si Firestore no responde en 5s, usa datos locales
+  var timeout=new Promise(function(resolve){setTimeout(resolve,5000,'timeout');});
+  var load=fsLoadAllInternal();
+  var result=await Promise.race([load,timeout]);
+  if(result==='timeout'){
+    console.warn('Firestore timeout — usando datos locales');
+  }
+}
+async function fsLoadAllInternal(){
+  try{
+    var isNew=!(await fsLoadCol('alumnas','alumnas'));
+    await fsLoadCol('clases','clases');
+    await fsLoadCol('reservas','reservas');
+    await fsLoadCol('pagos','pagos');
+    await fsLoadCol('instructores','instructores');
+    await fsLoadCol('notifs','notifs');
+    await fsLoadCol('planes','planes');
+    await fsLoadCol('paquetes','paquetes');
+    await fsLoadCol('cancelaciones','cancelaciones');
+    try{
+      var cfgDoc=await FSdb.collection('config').doc('studio').get();
+      if(cfgDoc.exists)DB.config=Object.assign({},DB.config,cfgDoc.data());
+    }catch(e){}
+    if(isNew)await fsSeedInitialData();
+    recomputeIds();
+  }catch(e){
+    console.warn('Firestore load error:', e.message);
+  }
+}
+
+// ── Recalcular contadores de ID según lo cargado (evita colisiones) ──
+function recomputeIds(){
+  function mx(arr){var m=0;(arr||[]).forEach(function(o){var n=parseInt(String(o.id).replace(/^\D+/,''),10);if(!isNaN(n)&&n>m)m=n;});return m+1;}
+  DB.ids.alu=mx(DB.alumnas);
+  DB.ids.cla=mx(DB.clases);
+  DB.ids.res=mx(DB.reservas);
+  DB.ids.pago=mx(DB.pagos);
+  DB.ids.inst=mx(DB.instructores);
+  DB.ids.plan=mx(DB.planes);
+  DB.ids.notif=mx(DB.notifs);
+  DB.ids.xcan=mx(DB.cancelaciones);
+  DB.ids.paq=mx(DB.paquetes);
+}
+
+
+// ── Seed Firestore with sample data on first run ───────────────
+async function fsSeedInitialData(){
+  try{
+    var batch=FSdb.batch();
+    DB.alumnas.forEach(function(a){batch.set(FSdb.collection('alumnas').doc(String(a.id)),a);});
+    DB.clases.forEach(function(c){batch.set(FSdb.collection('clases').doc(String(c.id)),c);});
+    DB.instructores.forEach(function(i){batch.set(FSdb.collection('instructores').doc(String(i.id)),i);});
+    DB.planes.forEach(function(p){batch.set(FSdb.collection('planes').doc(String(p.id)),p);});
+    batch.set(FSdb.collection('config').doc('studio'),DB.config);
+    await batch.commit();
+    console.log('✅ Firestore seeded with initial data');
+  }catch(e){console.warn('Seed error:', e.message);}
+}
+
+// ══════════════════════════════════════════
+//  DATA STORE
+// ══════════════════════════════════════════
+const DB = {
+  instructores:[
+  ],
+  alumnas:[
+  ],
+  clases:[
+  ],
+  reservas:[
+  ],
+  pagos:[
+  ],
+  cancelaciones:[
+  ],
+  planes:[
+  ],
+  paquetes:[
+  ],
+  frecPago:[
+    {id:"fp1",nom:"Mensual",meses:1,factor:1,desc:"Sin descuento"},
+    {id:"fp2",nom:"Trimestral",meses:3,factor:2.85,desc:"5% descuento"},
+    {id:"fp3",nom:"Semestral",meses:6,factor:5.4,desc:"10% descuento"},
+    {id:"fp4",nom:"Anual",meses:12,factor:10.2,desc:"15% descuento"},
+  ],
+  botConfig:{
+    bienvenida:"¡Hola! 👋 Bienvenida a *Auris Pole Studio*",
+    menuPrincipal:"¿En qué te puedo ayudar?",
+    mensajeAtencion:"Conectándote con nuestra administración 💬\nEn breve alguien te atenderá.",
+    detallesClase:"📍 *Encuéntranos:* Calle del Batán y Española, Cuenca\n\n📋 *Recuerda traer:*\n• Llega *10 minutos antes*\n• Agua 💧\n• Ropa cómoda 👗\n• Toalla 🏃\n• Implementos de uso personal\n\n⚠️ No se permiten acompañantes · Acceso individual",
+    confirmacionReserva:"✅ *¡Reserva realizada con éxito!*",
+    numeroPrincipal:"+593 98 452 1543",
+  },
+  notifs:[
+  ],
+  config:{
+    nombre:"Auris Pole Studio",
+    adminEmail:"admin@aurispole.com",
+    direccion:"Calle del Batán y Española, Cuenca",
+    telefono:"+593 98 452 1543",
+  },
+  ids:{alu:1,cla:1,res:1,pago:1,inst:1,plan:1,notif:1,xcan:1,paq:1}
+};
+
+// ══ UTILS ══
+const $=id=>document.getElementById(id);
+const getAlu=id=>DB.alumnas.find(a=>a.id===id);
+const getCla=id=>id==='inscripcion'?{id:'inscripcion',nom:'Inscripción (único)',dia:'—',hora:'—',dur:0,precio:50000,cupos:0,ins:0}:(DB.clases.find(c=>c.id===id)||{id:id,nom:'(clase eliminada)',dia:'—',hora:'—',dur:0,precio:0,cupos:0,ins:0});
+const getInst=id=>DB.instructores.find(i=>i.id===id);
+const ini=n=>n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const fmtCOP=n=>'$'+Number(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fmtD=d=>{if(!d)return'—';const[y,m,dd]=d.split('-');return`${dd}/${m}/${y.slice(2)}`;};
+const today=()=>new Date().toISOString().slice(0,10);
+const uid=()=>'x'+Math.random().toString(36).slice(2,8);
+const daysUntil=d=>{const t=new Date(d);const n=new Date();return Math.ceil((t-n)/86400000);};
+const timeNow=()=>new Date().toTimeString().slice(0,5);
+
+// ══ TOAST ══
+function toast(msg,type='in'){
+  const c=$('toasts'),t=document.createElement('div');
+  t.className=`toast t${type}`;
+  const icons={ok:'✓',er:'✕',in:'·'};
+  t.innerHTML=`<span>${icons[type]||'·'}</span> ${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(16px)';t.style.transition='all .3s';setTimeout(()=>t.remove(),300);},3200);
+}
+
+// ══ MODALS ══
+function openOv(id){$(id).classList.add('on')}
+function closeOv(id){$(id).classList.remove('on')}
+function confirm2(title,msg,cb,cls='bd'){
+  $('conf-t').textContent=title;$('conf-msg').textContent=msg;
+  const btn=$('conf-ok');btn.className=`btn sm ${cls}`;
+  btn.onclick=()=>{cb();closeOv('ov-conf');};openOv('ov-conf');
+}
+
+// ══ NAVIGATION ══
+const VIEW_TITLES={dashboard:'Dashboard',monitor:'Monitoreo en Vivo',reportes:'Reportes & Analytics',alumnas:'Gestión de Alumnas',instructores:'Instructores',horarios:'Control de Horarios',reservas:'Reservas',cancelaciones:'Cancelaciones',whatsapp:'Bot WhatsApp',notificaciones:'Notificaciones',pagos:'Pagos',membresias:'Membresías',config:'Configuración'};
+const VIEW_CTA={dashboard:'+ Nueva Alumna',alumnas:'+ Registrar Alumna',horarios:'+ Nueva Clase',reservas:'+ Nueva Reserva',instructores:'+ Instructor/a',membresias:'+ Nuevo Paquete',monitor:'',reportes:'',whatsapp:'',notificaciones:'',pagos:'',cancelaciones:'',config:''};
+let curView='dashboard';
+
+function goView(v){
+  document.querySelectorAll('.s-item').forEach(el=>el.classList.toggle('on',el.dataset.v===v));
+  document.querySelectorAll('.view').forEach(el=>el.classList.toggle('on',el.id===`v-${v}`));
+  const ttl=$('tb-title');if(ttl)ttl.textContent=VIEW_TITLES[v]||v;
+  const cta=$('tb-cta');if(cta){cta.textContent=VIEW_CTA[v]||'';cta.style.display=VIEW_CTA[v]?'':'none';}
+  curView=v;
+  const renders={dashboard:rDash,alumnas:rAlumnas,instructores:rInst,horarios:rHorarios,reservas:rReservas,cancelaciones:rCancel,monitor:rMonitor,whatsapp:rBot,notificaciones:rNotifs,pagos:rPagos,membresias:rMemb,reportes:rReportes,config:rConfig};
+  if(renders[v])try{renders[v]();}catch(e){console.error('render error in '+v,e);}
+}
+function ctaClick(){
+  if(curView==='dashboard'||curView==='alumnas')openAlumna();
+  else if(curView==='horarios')openClase();
+  else if(curView==='reservas')openReserva();
+  else if(curView==='instructores')openInst();
+  else if(curView==='membresias')openPaquete();
+}
+document.querySelectorAll('.s-item[data-v]').forEach(el=>el.addEventListener('click',()=>goView(el.dataset.v)));
+
+// ══════════════════
+//  DASHBOARD
+// ══════════════════
+function rDash(){
+  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const hoyDia=dias[new Date().getDay()];
+  const clasesHoy=DB.clases.filter(c=>c.dia===hoyDia);
+  const pendP=DB.pagos.filter(p=>p.est==='pendiente').length;
+  const resAct=DB.reservas.filter(r=>r.est!=='cancelada').length;
+  const ingMes=DB.pagos.filter(p=>p.est==='verificado').reduce((a,p)=>a+p.monto,0);
+  $('dash-stats').innerHTML=`
+    <div class="scard c1"><div class="scard-n">${DB.alumnas.length}</div><div class="scard-l">Alumnas Activas</div><div class="scard-s">TOTAL REGISTRADAS</div></div>
+    <div class="scard c2"><div class="scard-n">${clasesHoy.length||DB.clases.filter(c=>c.dia==='Lunes').length}</div><div class="scard-l">Clases Hoy</div><div class="scard-s">SESIONES PROGRAMADAS</div></div>
+    <div class="scard c3"><div class="scard-n">${resAct}</div><div class="scard-l">Reservas Activas</div><div class="scard-s">CONFIRMADAS + PENDIENTES</div></div>
+    <div class="scard c4"><div class="scard-n">${pendP}</div><div class="scard-l">Pagos Pendientes</div><div class="scard-s">POR VERIFICAR</div></div>`;
+  const show=clasesHoy.length?clasesHoy:DB.clases.slice(0,4);
+  $('dash-hoy').innerHTML=show.map(c=>{
+    const p=Math.round(c.ins/c.cupos*100);const inst=getInst(c.inst);
+    return`<div class="crow"><div style="flex:1"><div style="font-weight:600;font-size:13px">${c.nom}</div><div style="font-size:11px;color:var(--lgray);margin-top:1px">${c.hora}h · ${inst?.nom.split(' ')[0]||'—'}</div><div class="prog" style="margin-top:6px"><div class="pf ${p>=100?'hi':p>=80?'mid':'ok'}" style="width:${Math.min(p,100)}%"></div></div></div><div style="text-align:right;flex-shrink:0"><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray)">${c.ins}/${c.cupos}</div><span class="b ${p>=100?'br2':p>=80?'ba2':'bg2'}">${p>=100?'LLENA':p>=80?'CASI LLENA':'OK'}</span></div></div>`;
+  }).join('');
+  $('dash-act').innerHTML=DB.reservas.slice(-5).reverse().map(r=>{
+    const a=getAlu(r.alu);const c=getCla(r.cla);
+    return`<div class="crow"><div class="av" style="width:28px;height:28px;font-size:11px;flex-shrink:0">${ini(a?.nom||'?')}</div><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${a?.nom}</div><div style="font-size:11px;color:var(--lgray)">Reservó ${c?.nom} · ${r.ori}</div></div><span class="b ${r.est==='confirmada'?'bg2':r.est==='cancelada'?'br2':'ba2'}">${r.est}</span></div>`;
+  }).join('');
+  const pp=DB.pagos.filter(p=>p.est==='pendiente').slice(0,3);
+  $('dash-pagos').innerHTML=pp.length?pp.map(p=>{
+    const a=getAlu(p.alu);const c=getCla(p.cla);
+    return`<div class="crow"><div style="font-size:20px;flex-shrink:0">📸</div><div style="flex:1;min-width:0"><div style="font-weight:500;font-size:12px">${a?.nom}</div><div style="font-size:11px;color:var(--lgray)">${c?.nom} · ${fmtCOP(p.monto)}</div></div><button class="btn xs bg" onclick="verPago('${p.id}')">✓ Verificar</button></div>`;
+  }).join(''):`<div style="padding:28px;text-align:center;color:var(--lgray);font-size:13px">Sin pagos pendientes ✓</div>`;
+  const llenas=DB.clases.filter(c=>c.ins>=c.cupos);
+  const venc=DB.alumnas.filter(a=>a.pago==='vencido');
+  const porVencer=DB.alumnas.filter(a=>{const d=daysUntil(a.hasta);return d>=0&&d<=7;});
+  let alerts=[];
+  llenas.forEach(c=>alerts.push({ico:'🚫',txt:`${c.nom} (${c.dia}) — sin cupos disponibles`,tipo:'br2'}));
+  venc.forEach(a=>alerts.push({ico:'⚠️',txt:`${a.nom} — membresía vencida`,tipo:'ba2'}));
+  porVencer.forEach(a=>{const d=daysUntil(a.hasta);if(d>=0)alerts.push({ico:'⏳',txt:`${a.nom} — vence en ${d} días`,tipo:'ba2'});});
+  if(!alerts.length)alerts.push({ico:'✅',txt:'Todo en orden — sin alertas',tipo:'bg2'});
+  $('dash-alerts').innerHTML=alerts.slice(0,6).map(a=>`<div class="crow"><span style="font-size:16px;flex-shrink:0">${a.ico}</span><div style="font-size:12px;flex:1">${a.txt}</div><span class="b ${a.tipo}">${a.tipo==='br2'?'URGENTE':'AVISO'}</span></div>`).join('');
+}
+
+// ══════════════════
+//  ALUMNAS
+// ══════════════════
+let editAlu=null;
+const pagoCls={pagado:'bg2',pendiente:'ba2',vencido:'br2'};
+const nivCls={}; // replaced by clase interés
+
+function rAlumnas(){
+  // Populate clase filter dynamically (once)
+  const fnEl=$('fil-niv');
+  if(fnEl&&fnEl.options.length<=1){
+    [...new Set(DB.clases.map(c=>c.nom))].forEach(t=>{const o=document.createElement('option');o.value=t;o.text=t;fnEl.appendChild(o);});
+  }
+  const b=($('srch-alu')?.value||'').toLowerCase();
+  const fnVal=fnEl?.value||'';
+  const fp=$('fil-pago')?.value||'';
+  const fpl=$('fil-plan')?.value||'';
+  let lista=DB.alumnas.filter(a=>{
+    const ms=a.nom.toLowerCase().includes(b)||a.tel.includes(b)||(a.email||'').toLowerCase().includes(b);
+    return ms&&(!fnVal||a.niv===fnVal)&&(!fp||a.pago===fp)&&(!fpl||a.plan===fpl);
+  });
+  $('alu-ct').textContent=`${lista.length} Alumna${lista.length!==1?'s':''}`;
+  $('tb-alu').innerHTML=lista.length?lista.map(a=>{
+    const nR=DB.reservas.filter(r=>r.alu===a.id&&r.est!=='cancelada').length;
+    const d=daysUntil(a.hasta);
+    return`<tr class="trh">
+      <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="width:30px;height:30px;font-size:11px">${ini(a.nom)}</div><div><div style="font-weight:600;font-size:13px">${a.nom}</div><div style="font-size:11px;color:var(--lgray)">${a.email||'—'}</div></div></div></td>
+      <td class="td-mono">${a.tel}</td>
+      <td style="font-size:12px;color:var(--gray)">${a.niv||'—'}</td>
+      <td><span class="b bgr">${a.plan}</span></td>
+      <td><span class="b ${pagoCls[a.pago]}">${a.pago}</span></td>
+      <td class="td-sm" style="color:${d<0?'var(--red)':d<7?'var(--amber)':'var(--gray)'}">${fmtD(a.hasta)}${d<0?' ⚠':d<7?` (${d}d)`:''}</td>
+      <td style="text-align:center;font-family:'DM Mono',monospace;font-size:12px">${nR}</td>
+      <td><div class="tda"><button class="btn xs bo" onclick="verAlumna('${a.id}')">Ver</button><button class="btn xs bo" onclick="openAlumna('${a.id}')">✎</button><button class="btn xs br" onclick="delAlumna('${a.id}')">✕</button></div></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="8" style="text-align:center;padding:40px;color:var(--lgray)">No se encontraron alumnas</td></tr>`;
+}
+
+function fillClaseSelect(selId,selectedVal){
+  const s=$(selId);if(!s)return;
+  const tipos=[...new Set(DB.clases.map(c=>c.nom))];
+  s.innerHTML='<option value="">— Seleccionar clase —</option>'+tipos.map(t=>`<option value="${t}"${t===selectedVal?' selected':''}>${t}</option>`).join('');
+}
+function openAlumna(id=null){
+  editAlu=id;
+  $('ma-t').textContent=id?'Editar Alumna':'Registrar Alumna';
+  if(id){
+    const a=getAlu(id);
+    $('a-nom').value=a.nom;$('a-tel').value=a.tel;$('a-email').value=a.email||'';
+    fillClaseSelect('a-niv',a.niv||'');
+    $('a-plan').value=a.plan;$('a-pago').value=a.pago;$('a-fecha').value=a.desde||'';$('a-hasta').value=a.hasta||'';$('a-notas').value=a.notas||'';if($('a-ref'))$('a-ref').value=a.ref||'';
+  } else {
+    ['a-nom','a-tel','a-email','a-notas'].forEach(i=>{if($(i))$(i).value='';});
+    if($('a-ref'))$('a-ref').value='';
+    fillClaseSelect('a-niv','');
+    $('a-plan').value='Mensual';$('a-pago').value='pendiente';$('a-fecha').value=today();$('a-hasta').value='';
+  }
+  ['a-nom','a-tel'].forEach(i=>$(i).classList.remove('err'));
+  openOv('ov-alu');
+}
+
+function saveAlumna(){
+  const nom=$('a-nom').value.trim(),tel=$('a-tel').value.trim();
+  let ok=true;
+  if(!nom){$('a-nom').classList.add('err');ok=false;}else $('a-nom').classList.remove('err');
+  if(!tel){$('a-tel').classList.add('err');ok=false;}else $('a-tel').classList.remove('err');
+  if(!ok)return;
+  const data={nom,tel,email:$('a-email').value.trim(),niv:$('a-niv')?.value||'—',plan:$('a-plan').value,pago:$('a-pago').value,desde:$('a-fecha').value,hasta:$('a-hasta').value,notas:$('a-notas').value.trim(),ref:$('a-ref')?.value?.trim()||''};
+  if(editAlu){const _a=getAlu(editAlu);Object.assign(_a,data);fsSave('alumnas',_a);toast('Alumna actualizada','ok');}
+  else{const _na={id:'a'+DB.ids.alu++,...data};DB.alumnas.push(_na);fsSave('alumnas',_na);addNotif('sys','Nueva alumna registrada',`${nom} — nivel ${data.niv}`);toast('¡Alumna registrada!','ok');}
+  closeOv('ov-alu');rAlumnas();rDash();actualizarBadges();
+}
+
+function verAlumna(id){
+  const a=getAlu(id);
+  const res=DB.reservas.filter(r=>r.alu===id);
+  const pags=DB.pagos.filter(p=>p.alu===id);
+  $('det-t').textContent=a.nom;
+  $('det-body').innerHTML=`
+    <div class="info-grid">
+      <div class="info-cell"><div class="info-lbl">Teléfono WA</div><div class="info-val" style="font-family:'DM Mono',monospace;font-size:11px">${a.tel}</div></div>
+      <div class="info-cell"><div class="info-lbl">Clase de Interés</div><div class="info-val">${a.niv||'—'}</div></div>
+      <div class="info-cell"><div class="info-lbl">Plan</div><div class="info-val">${a.plan}</div></div>
+      <div class="info-cell"><div class="info-lbl">Pago</div><span class="b ${pagoCls[a.pago]}">${a.pago}</span></div>
+      <div class="info-cell"><div class="info-lbl">Desde</div><div class="info-val">${fmtD(a.desde)}</div></div>
+      <div class="info-cell"><div class="info-lbl">Hasta</div><div class="info-val">${fmtD(a.hasta)}</div></div>
+      <div class="info-cell"><div class="info-lbl">Referida por</div><div class="info-val">${a.ref||'—'}</div></div>
+      <div class="info-cell"><div class="info-lbl">Reservas</div><div class="info-val">${res.length}</div></div>
+    </div>
+    ${a.notas?`<div style="background:var(--beige);padding:10px 13px;font-size:12px;color:var(--gray);margin-bottom:14px;border-radius:3px">📝 ${a.notas}</div>`:''}
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">Historial de Reservas (${res.length})</div>
+    ${res.map(r=>{const c=getCla(r.cla);return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)"><span style="font-size:12px">${c?.nom} · ${c?.dia} ${c?.hora}h</span><div style="display:flex;gap:8px;align-items:center"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--lgray)">${fmtD(r.fecha)}</span><span class="b ${r.est==='confirmada'?'bg2':r.est==='cancelada'?'br2':'ba2'}">${r.est}</span></div></div>`;}).join('')}
+    ${!res.length?`<div style="font-size:12px;color:var(--lgray);padding:8px 0">Sin reservas registradas</div>`:''}
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);letter-spacing:.12em;text-transform:uppercase;margin-top:14px;margin-bottom:8px">Pagos (${pags.length})</div>
+    ${pags.map(p=>{return`<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--line)"><span style="font-size:12px">${getCla(p.cla)?.nom} · ${fmtCOP(p.monto)}</span><span class="b ${p.est==='verificado'?'bg2':p.est==='rechazado'?'br2':'ba2'}">${p.est}</span></div>`;}).join('')}
+    ${!pags.length?`<div style="font-size:12px;color:var(--lgray);padding:8px 0">Sin pagos</div>`:''}
+    <div style="margin-top:16px;display:flex;gap:8px">
+      <button class="btn sm br" onclick="confirm2('Eliminar Alumna','¿Eliminar a ${a.nom}?',()=>{delAlumna('${id}');closeOv('ov-det');},'br')">Eliminar Alumna</button>
+    </div>`;
+  openOv('ov-det');
+}
+
+function delAlumna(id){
+  confirm2('Eliminar Alumna',`¿Eliminar a ${getAlu(id)?.nom}? Se eliminarán sus reservas y pagos.`,()=>{
+    const _dR=DB.reservas.filter(r=>r.alu===id);
+    const _dP=DB.pagos.filter(p=>p.alu===id);
+    DB.alumnas=DB.alumnas.filter(a=>a.id!==id);
+    DB.reservas=DB.reservas.filter(r=>r.alu!==id);
+    DB.pagos=DB.pagos.filter(p=>p.alu!==id);
+    fsDelete('alumnas',id);
+    _dR.forEach(r=>fsDelete('reservas',r.id));
+    _dP.forEach(p=>fsDelete('pagos',p.id));
+    rAlumnas();rDash();actualizarBadges();toast('Alumna eliminada');
+  },'br');
+}
+
+function exportCSV(){
+  const h='Nombre,Teléfono,Email,Nivel,Plan,Pago,Desde,Hasta\n';
+  const rows=DB.alumnas.map(a=>`"${a.nom}","${a.tel}","${a.email||''}","${a.niv}","${a.plan}","${a.pago}","${a.desde}","${a.hasta}"`).join('\n');
+  const blob=new Blob([h+rows],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='auris_pole_alumnas.csv';a.click();
+  toast('CSV exportado','ok');
+}
+
+// ══════════════════
+//  INSTRUCTORAS
+// ══════════════════
+let editInst=null;
+function rInst(){
+  $('inst-ct').textContent=`${DB.instructores.length} Instructor${DB.instructores.length!==1?"es":""}`;
+  $('tb-inst').innerHTML=DB.instructores.map(i=>{
+    const nCla=DB.clases.filter(c=>c.inst===i.id).length;
+    return`<tr class="trh">
+      <td><div style="display:flex;align-items:center;gap:9px"><div class="av" style="width:30px;height:30px;font-size:11px">${ini(i.nom)}</div><div><div style="font-weight:600;font-size:13px">${i.nom}</div><div style="font-size:11px;color:var(--lgray)">${i.email||'—'}</div></div></div></td>
+      <td style="font-size:12px">${i.esp||'—'}</td>
+      <td class="td-mono">${i.tel||'—'}</td>
+      <td style="text-align:center;font-family:'DM Mono',monospace;font-size:12px">${nCla}</td>
+      <td><span class="b ${i.est==='activa'?'bg2':'br2'}">${i.est}</span></td>
+      <td><div class="tda"><button class="btn xs bo" onclick="openInst('${i.id}')">✎ Editar</button><button class="btn xs br" onclick="delInst('${i.id}')">✕</button></div></td>
+    </tr>`;
+  }).join('')||`<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--lgray)">Sin instructores</td></tr>`;
+}
+
+function openInst(id=null){
+  editInst=id;$('mi-t').textContent=id?'Editar Instructor/a':'Nuevo Instructor/a';
+  if(id){const i=getInst(id);$('i-nom').value=i.nom;$('i-esp').value=i.esp||'';$('i-tel').value=i.tel||'';$('i-email').value=i.email||'';$('i-est').value=i.est;}
+  else{['i-nom','i-esp','i-tel','i-email'].forEach(x=>$(x).value='');$('i-est').value='activa';}
+  openOv('ov-inst');
+}
+
+function saveInst(){
+  const nom=$('i-nom').value.trim();if(!nom){toast('Nombre obligatorio','er');return;}
+  const data={nom,esp:$('i-esp').value.trim(),tel:$('i-tel').value.trim(),email:$('i-email').value.trim(),est:$('i-est').value};
+  if(editInst){const _i=getInst(editInst);Object.assign(_i,data);fsSave('instructores',_i);toast('Instructor/a actualizado/a','ok');}
+  else{const _ni={id:'i'+DB.ids.inst++,...data};DB.instructores.push(_ni);fsSave('instructores',_ni);toast('Instructor/a agregado/a','ok');}
+  closeOv('ov-inst');rInst();
+}
+
+function delInst(id){
+  confirm2('Eliminar Instructor/a',`¿Eliminar a ${getInst(id)?.nom}? Las clases asignadas perderán su instructora.`,()=>{
+    DB.instructores=DB.instructores.filter(i=>i.id!==id);fsDelete('instructores',id);rInst();toast('Instructor/a eliminado/a');
+  },'br');
+}
+
+// ══════════════════
+//  HORARIOS
+// ══════════════════
+// Horario grid event delegation using data-act / data-id
+// No inline JS, no global function names with IDs
+document.addEventListener('click',function(e){
+  var el=e.target.closest('[data-act][data-id]');
+  if(!el)return;
+  var act=el.dataset.act, id=el.dataset.id;
+  if(!act||!id)return;
+  e.stopPropagation();
+  if(act==='view'){verClase(id);}
+  else if(act==='edit'){closeOv('ov-det');setTimeout(function(){openClase(id);},50);}
+  else if(act==='del'){
+    var c=DB.clases.find(function(x){return x.id===id;});
+    if(!c)return;
+    confirm2('Eliminar Clase','¿Eliminar "'+c.nom+'"? Se eliminarán las reservas asociadas.',function(){
+      closeOv('ov-det');delClase(id);rHorarios();rDash();renderLandingClases();
+    },'br');
+  }
+});
+
+function rHorarios(){
+  var grid=$('hgrid');
+  if(!grid)return;
+  var dias=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var html='';
+  dias.forEach(function(dia){
+    var cls=DB.clases.filter(function(c){return c.dia===dia;}).sort(function(a,b){return a.hora.localeCompare(b.hora);});
+    html+='<div class="hday"><div class="hdlbl">'+dia.slice(0,3)+'</div>';
+    cls.forEach(function(c){
+      var p=c.cupos>0?c.ins/c.cupos:0;
+      var clz=p>=1?'hhi':p>=.8?'hmid':'hok';
+      var inst=getInst(c.inst);
+      var pct=Math.round(Math.min(p,1)*100);
+      var pfc=p>=1?'hi':p>=.8?'mid':'ok';
+      var instNom=inst?inst.nom.split(' ')[0]:'—';
+      var cid=c.id;
+      html+='<div class="hslot '+clz+'">'
+        +'<div class="hslot-body" data-act="view" data-id="'+cid+'">'
+        +'<div class="hs-time">'+c.hora+'h &middot; '+(c.dur||90)+'min</div>'
+        +'<div class="hs-name">'+c.nom+'</div>'
+        +'<div class="hs-info">'+c.ins+'/'+c.cupos+' &middot; '+instNom+'</div>'
+        +'<div class="prog" style="margin-top:6px"><div class="pf '+pfc+'" style="width:'+pct+'%"></div></div>'
+        +'</div>'
+        +'<div class="hslot-acts">'
+        +'<button class="hslot-edit" data-act="edit" data-id="'+cid+'">&#9998; Editar</button>'
+        +'<button class="hslot-del" data-act="del" data-id="'+cid+'">&#x2715;</button>'
+        +'</div>'
+        +'</div>';
+    });
+    if(!cls.length) html+='<div class="hempty">Sin clases</div>';
+    html+='</div>';
+  });
+  grid.innerHTML=html;
+}
+
+let editClaId=null;
+function openClase(id){
+  id=id||null;
+  editClaId=id;
+  try{
+    // Fill instructores
+    var instSel=$('c-inst');
+    if(instSel){
+      instSel.innerHTML=DB.instructores.map(function(i){
+        return '<option value="'+i.id+'">'+i.nom+'</option>';
+      }).join('');
+    }
+    // Reset days
+    document.querySelectorAll('#c-dias-wrap input[type=checkbox]').forEach(function(cb){cb.checked=false;});
+    // Reset resumen
+    var resEl=$('c-resumen');if(resEl)resEl.style.display='none';
+
+    if(id){
+      var c=DB.clases.find(function(x){return x.id===id;});
+      if(!c){toast('Clase no encontrada','er');return;}
+      if($('c-nom'))$('c-nom').value=c.nom||'';
+      if($('c-hora'))$('c-hora').value=c.hora||'18:00';
+      if($('c-cupos'))$('c-cupos').value=c.cupos||6;
+      if($('c-dur'))$('c-dur').value=c.dur||90;
+      if($('c-precio'))$('c-precio').value=c.precio||15;
+      if($('c-meses'))$('c-meses').value=c.meses!==undefined?c.meses:1;
+      if($('c-clases-mes'))$('c-clases-mes').value=c.clasesMes||8;
+      if(instSel&&c.inst){setTimeout(function(){instSel.value=c.inst;},0);}
+      // Check days
+      var savedDias=Array.isArray(c.dias)&&c.dias.length?c.dias:[c.dia].filter(Boolean);
+      document.querySelectorAll('#c-dias-wrap input[type=checkbox]').forEach(function(cb){
+        if(savedDias.indexOf(cb.value)>-1)cb.checked=true;
+      });
+      if($('mc-t'))$('mc-t').textContent='Editar Clase';
+      if($('save-cla-btn'))$('save-cla-btn').textContent='Guardar Cambios';
+    } else {
+      if($('c-nom'))$('c-nom').value='';
+      if($('c-hora'))$('c-hora').value='18:00';
+      if($('c-cupos'))$('c-cupos').value=6;
+      if($('c-dur'))$('c-dur').value=90;
+      if($('c-precio'))$('c-precio').value=15;
+      if($('c-meses'))$('c-meses').value=1;
+      if($('c-clases-mes'))$('c-clases-mes').value=8;
+      if($('mc-t'))$('mc-t').textContent='Nueva Clase';
+      if($('save-cla-btn'))$('save-cla-btn').textContent='Crear Clase';
+    }
+  }catch(err){console.error('openClase error:',err);}
+  openOv('ov-clase');
+}
+
+function saveClase(){
+  const nom=$('c-nom').value.trim();
+  if(!nom){toast('El nombre de la clase es obligatorio','er');return;}
+  const dias=[...document.querySelectorAll('#c-dias-wrap input[type=checkbox]:checked')].map(cb=>cb.value);
+  if(!dias.length){toast('Selecciona al menos un día de la semana','er');return;}
+  const inst=$('c-inst')?.value||'';
+  const hora=$('c-hora')?.value||'18:00';
+  const cupos=+($('c-cupos')?.value||6);
+  const dur=+($('c-dur')?.value||90);
+  const precio=+($('c-precio')?.value||15);
+  const meses=+($('c-meses')?.value||1);
+  const clasesMes=+($('c-clases-mes')?.value||8);
+  const hoy=new Date();
+  const fechaIni=hoy.toISOString().slice(0,10);
+  let fechaFin=null;
+  if(meses>0){const f=new Date(hoy);f.setMonth(f.getMonth()+meses);fechaFin=f.toISOString().slice(0,10);}
+
+  if(editClaId){
+    // EDIT existing — update all matching entries (same editClaId)
+    // If dias changed, we remove old ones and create new ones
+    const existing=DB.clases.find(c=>c.id===editClaId);
+    if(existing){
+      // Update all clases that share same group (same nombre+hora created together)
+      const grp=existing.grupo||editClaId;
+      const _oldCls=DB.clases.filter(c=>c.grupo===grp||c.id===editClaId);
+      // Remove old entries for this group
+      DB.clases=DB.clases.filter(c=>c.grupo!==grp&&c.id!==editClaId);
+      _oldCls.forEach(c=>fsDelete('clases',c.id));
+      // Re-create with new dias
+      dias.forEach(dia=>{
+        const _nc={id:'c'+DB.ids.cla++,grupo:grp,nom,dias,dia,hora,cupos,ins:existing.ins||0,inst,precio,dur,meses,clasesMes,fechaIni,fechaFin};
+        DB.clases.push(_nc);fsSave('clases',_nc);
+      });
+      toast(`Clase actualizada en ${dias.length} día${dias.length!==1?'s':''}!`,'ok');
+    }
+  } else {
+    // CREATE new — one entry per day, linked by grupo
+    const grupo='g'+DB.ids.cla;
+    dias.forEach(dia=>{
+      const _nc={id:'c'+DB.ids.cla++,grupo,nom,dias,dia,hora,cupos,ins:0,inst,precio,dur,meses,clasesMes,fechaIni,fechaFin};
+      DB.clases.push(_nc);fsSave('clases',_nc);
+    });
+    toast(`Clase creada en ${dias.length} día${dias.length!==1?'s':''}!`,'ok');
+  }
+  editClaId=null;
+  closeOv('ov-clase');
+  rHorarios();
+  rDash();
+  renderLandingClases();
+}
+
+function verClase(id){
+  const c=getCla(id);if(!c){toast('Clase no encontrada','er');return;}
+  const inst=getInst(c.inst);
+  const resC=DB.reservas.filter(r=>r.cla===id&&r.est!=='cancelada');
+  const p=c.cupos>0?Math.round(c.ins/c.cupos*100):0;
+  const diasArr=Array.isArray(c.dias)&&c.dias.length?c.dias:[c.dia].filter(Boolean);
+  const meses=c.meses!==undefined?+c.meses:1;
+  const vigTxt=meses===0?'Sin vencimiento':(c.fechaFin?'Hasta '+fmtD(c.fechaFin):meses+' mes'+(meses!==1?'es':''));
+  $('det-t').textContent=c.nom;
+  let diasHtml=diasArr.map(function(d){
+    return '<span style="background:rgba(194,168,122,.15);border:1px solid rgba(194,168,122,.3);color:var(--tan);padding:3px 10px;font-family:DM Mono,monospace;font-size:10px;letter-spacing:.08em;border-radius:2px">'+d+'</span>';
+  }).join(' ');
+  let aluHtml=resC.map(function(r){
+    const a=getAlu(r.alu);
+    return '<div style="display:flex;align-items:center;gap:9px;padding:7px 0;border-bottom:1px solid var(--line)">'
+      +'<div class="av" style="width:26px;height:26px;font-size:10px">'+ini((a&&a.nom)||'?')+'</div>'
+      +'<span style="flex:1;font-size:12px">'+((a&&a.nom)||'—')+'</span>'
+      +'</div>';
+  }).join('');
+  $('det-body').innerHTML=
+    '<div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px">'+diasHtml+'</div>'
+    +'<div class="info-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">'
+    +'<div class="info-cell"><div class="info-lbl">Horario</div><div class="info-val">'+c.hora+'h · '+c.dur+'min</div></div>'
+    +'<div class="info-cell"><div class="info-lbl">Instructor/a</div><div class="info-val">'+((inst&&inst.nom)||'—')+'</div></div>'
+    +'<div class="info-cell"><div class="info-lbl">Cupos</div><div class="info-val">'+c.ins+'/'+c.cupos+'</div></div>'
+    +'<div class="info-cell"><div class="info-lbl">Precio</div><div class="info-val">$'+c.precio+' USD</div></div>'
+    +'<div class="info-cell"><div class="info-lbl">Clases/mes</div><div class="info-val">'+((c.clasesMes)||'—')+'</div></div>'
+    +'<div class="info-cell"><div class="info-lbl">Vigencia</div><div class="info-val">'+vigTxt+'</div></div>'
+    +'</div>'
+    +'<div class="prog" style="height:6px;margin-bottom:14px"><div class="pf '+(p>=100?'hi':p>=80?'mid':'ok')+'" style="width:'+Math.min(p,100)+'%"></div></div>'
+    +'<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--lgray);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">Alumnas Inscritas ('+resC.length+')</div>'
+    +(aluHtml||'<div style="font-size:12px;color:var(--lgray);padding:8px 0">Sin alumnas inscritas</div>')
+    +'<div style="margin-top:18px;display:flex;gap:8px">'
+    +'<button class="btn sm bd" data-act="edit" data-id="'+id+'">✎ Editar Clase</button>'
+    +'<button class="btn sm br" data-act="del" data-id="'+id+'">✕ Eliminar</button>'
+    +'</div>';
+  openOv('ov-det');
+}
+
+function delClase(id){
+  const _dR=DB.reservas.filter(r=>r.cla===id);
+  DB.clases=DB.clases.filter(c=>c.id!==id);DB.reservas=DB.reservas.filter(r=>r.cla!==id);
+  fsDelete('clases',id);_dR.forEach(r=>fsDelete('reservas',r.id));
+  rHorarios();rDash();toast('Clase eliminada');
+}
+
+// ══════════════════
+//  RESERVAS
+// ══════════════════
+let tabRes='todas',srchResV='';
+function rReservas(){
+  let lista=DB.reservas.filter(r=>{
+    const a=getAlu(r.alu);const c=getCla(r.cla);
+    const b=srchResV.toLowerCase();
+    return (tabRes==='todas'||r.est===tabRes)&&(!b||(a?.nom.toLowerCase().includes(b)||c?.nom.toLowerCase().includes(b)));
+  });
+  $('res-ct').textContent=`${lista.length} Reserva${lista.length!==1?'s':''}`;
+  $('tb-res').innerHTML=lista.length?lista.map(r=>{
+    const a=getAlu(r.alu);const c=getCla(r.cla);
+    return`<tr class="trh">
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="av" style="width:26px;height:26px;font-size:10px">${ini(a?.nom||'?')}</div><span style="font-size:13px">${a?.nom}</span></div></td>
+      <td style="font-size:13px">${c?.nom}</td>
+      <td class="td-mono">${c?.dia} ${c?.hora}h</td>
+      <td><span class="b ${r.est==='confirmada'?'bg2':r.est==='cancelada'?'br2':'ba2'}">${r.est}</span></td>
+      <td><span class="b ${r.ori==='WhatsApp'?'bw2':'bgr'}">${r.ori}</span></td>
+      <td class="td-sm">${fmtD(r.fecha)}</td>
+      <td><div class="tda">
+        ${r.est==='pendiente'?`<button class="btn xs bg" onclick="confirmRes('${r.id}')">✓</button>`:''}
+        ${r.est!=='cancelada'?`<button class="btn xs br" onclick="cancelarRes('${r.id}')">Cancelar</button>`:''}
+      </div></td>
+    </tr>`;
+  }).join(''):`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--lgray)">Sin reservas</td></tr>`;
+}
+
+function setTabRes(v,el){tabRes=v;document.querySelectorAll('#tabs-res .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');rReservas();}
+function srchRes(v){srchResV=v;rReservas();}
+
+function openReserva(){
+  $('r-alu').innerHTML=DB.alumnas.map(a=>`<option value="${a.id}">${a.nom}</option>`).join('');
+  $('r-cla').innerHTML=DB.clases.map(c=>`<option value="${c.id}">${c.nom} · ${c.dia} ${c.hora}h (${c.cupos-c.ins} cupos)</option>`).join('');
+  $('r-fecha').value=today();$('r-est').value='confirmada';$('r-ori').value='Admin';$('r-notas').value='';
+  const ci=$('cupos-info');if(ci)ci.style.display='none';checkCupos();openOv('ov-res');
+}
+
+function checkCupos(){
+  const cId=$('r-cla')?.value;if(!cId)return;
+  const c=getCla(cId);if(!c)return;
+  const disp=c.cupos-c.ins;const el=$('cupos-info');if(!el)return;el.style.display='block';
+  el.innerHTML=disp>0?`<div style="background:var(--gbg);padding:8px 11px;font-size:12px;color:var(--green);border-radius:3px">✓ ${disp} cupo${disp!==1?'s':''} disponible${disp!==1?'s':''}. Reserva posible.</div>`:`<div style="background:var(--rbg);padding:8px 11px;font-size:12px;color:var(--red);border-radius:3px">✕ Sin cupos disponibles — clase completamente llena.</div>`;
+}
+
+function saveReserva(){
+  const aId=$('r-alu').value,cId=$('r-cla').value;
+  const c=getCla(cId);
+  if(!c){toast('Selecciona una clase','er');return;}
+  if(c.ins>=c.cupos){toast('Sin cupos disponibles en esa clase','er');return;}
+  const dup=DB.reservas.find(r=>r.alu===aId&&r.cla===cId&&r.est!=='cancelada');
+  if(dup){toast('Esta alumna ya tiene una reserva activa en esa clase','er');return;}
+  const aluR=getAlu(aId);
+  // Modelo de paquetes: la reserva descuenta 1 clase del paquete — NO genera cobro por clase
+  if(aluR&&typeof aluR.clasesRestantes==='number'&&aluR.clasesRestantes<=0){
+    toast('Esta alumna ya agotó las clases de su paquete. Debe renovar.','er');return;
+  }
+  const est=$('r-est').value,ori=$('r-ori').value;
+  const nr={id:'r'+DB.ids.res++,alu:aId,cla:cId,fecha:$('r-fecha').value,est,ori,notas:$('r-notas').value};
+  DB.reservas.push(nr);fsSave('reservas',nr);
+  c.ins++;fsUpdate('clases',c.id,{ins:c.ins});
+  if(aluR&&typeof aluR.clasesRestantes==='number'&&aluR.clasesRestantes>0){
+    aluR.clasesRestantes--;fsUpdate('alumnas',aluR.id,{clasesRestantes:aluR.clasesRestantes});
+  }
+  addNotif('sys','Nueva reserva creada',`${aluR?.nom} → ${c.nom} ${c.dia}`);
+  toast('Reserva creada','ok');closeOv('ov-res');rReservas();rDash();
+}
+
+function confirmRes(id){
+  const r=DB.reservas.find(x=>x.id===id);r.est='confirmada';fsUpdate('reservas',r.id,{est:'confirmada'});
+  const p=DB.pagos.find(x=>x.alu===r.alu&&x.cla===r.cla&&x.est==='pendiente');
+  if(p){p.est='verificado';actualizarBadges();}
+  rReservas();rDash();toast('Reserva confirmada','ok');
+}
+
+function cancelarRes(id){
+  const r=DB.reservas.find(x=>x.id===id);const c=getCla(r.cla);
+  const now=new Date();const[h,m]=c.hora.split(':').map(Number);
+  const claseT=new Date();claseT.setHours(h,m,0,0);
+  const diffH=(claseT-now)/3600000;
+  const aTiempo=!(diffH>0&&diffH<2);
+  if(!aTiempo){
+    toast('⚠ Cancelación tardía — fuera de ventana de 2h. Cupo no liberado.','er');
+    var _xcT={id:'x'+DB.ids.xcan++,alu:r.alu,cla:r.cla,horaCla:c.hora,cancelo:timeNow(),aTiempo:false,liberado:false,fecha:today()};
+    DB.cancelaciones.push(_xcT);fsSave('cancelaciones',_xcT);
+    r.est='cancelada';fsUpdate('reservas',r.id,{est:'cancelada'});rReservas();return;
+  }
+  r.est='cancelada';fsUpdate('reservas',r.id,{est:'cancelada'});if(c.ins>0)c.ins--;fsUpdate('clases',c.id,{ins:c.ins});
+  // Devolver la clase al paquete de la alumna (cancelación a tiempo)
+  var aluCanc=getAlu(r.alu);
+  if(aluCanc&&typeof aluCanc.clasesRestantes==='number'){
+    aluCanc.clasesRestantes++;fsUpdate('alumnas',aluCanc.id,{clasesRestantes:aluCanc.clasesRestantes});
+  }
+  DB.cancelaciones.push({id:'x'+DB.ids.xcan++,alu:r.alu,cla:r.cla,horaCla:c.hora,cancelo:timeNow(),aTiempo:true,liberado:true,fecha:today()});
+  fsSave('cancelaciones',DB.cancelaciones[DB.cancelaciones.length-1]);
+  addNotif('wa','Cancelación procesada',`${getAlu(r.alu)?.nom} — cupo liberado en ${c.nom}`);
+  rReservas();rHorarios();rDash();toast('Reserva cancelada · cupo liberado');
+}
+
+// ══════════════════
+//  CANCELACIONES
+// ══════════════════
+function rCancel(){
+  const hoy=today();
+  $('can-n2').textContent=DB.cancelaciones.filter(c=>c.fecha===hoy&&c.aTiempo).length;
+  $('can-n3').textContent=DB.cancelaciones.filter(c=>!c.aTiempo).length;
+  $('tb-can').innerHTML=DB.cancelaciones.length?DB.cancelaciones.map(c=>`<tr class="trh">
+    <td style="font-size:13px">${getAlu(c.alu)?.nom||'—'}</td>
+    <td style="font-size:13px">${getCla(c.cla)?.nom||'—'}</td>
+    <td class="td-mono">${c.horaCla}h</td>
+    <td class="td-mono">${c.cancelo}h</td>
+    <td><span class="b ${c.aTiempo?'bg2':'br2'}">${c.aTiempo?'SÍ, a tiempo':'NO, tardía'}</span></td>
+    <td><span class="b ${c.liberado?'bg2':'br2'}">${c.liberado?'Sí':'No'}</span></td>
+    <td class="td-sm">${fmtD(c.fecha)}</td>
+  </tr>`).join(''):`<tr><td colspan="7" style="text-align:center;padding:40px;color:var(--lgray)">Sin cancelaciones registradas</td></tr>`;
+}
+
+// ══════════════════
+//  MONITOR
+// ══════════════════
+function rMonitor(){
+  const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const hoyDia=dias[new Date().getDay()];
+  let show=DB.clases.filter(c=>c.dia===hoyDia);
+  if(!show.length)show=DB.clases.slice(0,3);
+  $('mgrid').innerHTML=show.map(c=>{
+    const resC=DB.reservas.filter(r=>r.cla===c.id&&r.est!=='cancelada');
+    const p=Math.round(c.ins/c.cupos*100);const inst=getInst(c.inst);
+    const uid2='m'+Math.random().toString(36).slice(2,6);
+    return`<div class="mcard">
+      <div class="mch"><div><div class="mc-name">${c.nom}</div><div class="mc-sub">${c.hora}h · ${inst?.nom.split(' ')[0]||'—'}</div></div><span class="b ${p>=100?'br2':p>=80?'ba2':'bg2'}">${c.ins}/${c.cupos}</span></div>
+      <div class="prog" style="height:4px;border-radius:0"><div class="pf ${p>=100?'hi':p>=80?'mid':'ok'}" style="width:${Math.min(p,100)}%"></div></div>
+      <div class="att-list" id="${uid2}">
+        ${resC.map(r=>{const a=getAlu(r.alu);return`<div class="att-row"><div class="av" style="width:24px;height:24px;font-size:10px">${ini(a?.nom||'?')}</div><div class="att-name">${a?.nom}</div><button class="chk-btn" onclick="toggleChk(this)" title="Marcar asistencia">✓</button></div>`;}).join('')}
+        ${!resC.length?`<div style="padding:12px 0;font-size:11px;color:var(--lgray)">Sin alumnas inscritas</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleChk(btn){btn.classList.toggle('yes');toast(btn.classList.contains('yes')?'Asistencia registrada ✓':'Asistencia desmarcada');}
+
+// ══════════════════
+//  WHATSAPP BOT
+// ══════════════════
+let botState='idle',botCtx={},msgsEl;
+
+// ── Código de acceso: últimos 5 dígitos del teléfono ──────────────
+function aluCode(tel){
+  if(!tel)return'?????';
+  const digits=tel.replace(/[^0-9]/g,'');
+  return digits.slice(-5)||'?????';
+}
+function findAluByCode(code){
+  const c=code.replace(/[^0-9]/g,'');
+  return DB.alumnas.find(function(a){return aluCode(a.tel)===c;});
+}
+const BOT_FLOWS=[
+  {ico:'📅',t:'Ver clases disponibles',d:'Consulta DB y lista clases con cupos > 0'},
+  {ico:'📝',t:'Registrar nueva alumna',d:'Nombre · Tel · Email · Emergencia · Clase · Plan + fee inscripción'},
+  {ico:'🔐',t:'Identificación por código',d:'Bot pide los últimos 5 dígitos del teléfono registrado — ej: teléfono +593 98 452 1543 → código 21543'},
+  {ico:'📊',t:'Estado del cliente',d:'Una vez identificada, muestra plan, vencimiento y reservas'},
+  {ico:'💰',t:'Pago inscripción único',d:'Cargo único + costo del plan elegido'},
+  {ico:'📋',t:'Mis reservas activas',d:'Lista reservas del usuario identificado'},
+  {ico:'❌',t:'Cancelar una clase',d:'Cancela con regla de 2h y liberación de cupo'},
+  {ico:'💳',t:'Enviar comprobante',d:'Recibe imagen y notifica al admin'},
+  {ico:'⚡',t:'Anti-overbooking',d:'Verifica cupos en DB ANTES de confirmar'},
+  {ico:'🔔',t:'Recordatorios automáticos',d:'24h y 2h antes de cada clase'},
+];
+
+function rBot(){
+  if(!$('bot-msgs').children.length)startBot();
+  $('bot-flow').innerHTML=BOT_FLOWS.map(f=>`<div style="display:flex;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="font-size:16px;flex-shrink:0">${f.ico}</span><div><div style="font-size:12px;font-weight:600">${f.t}</div><div style="font-size:11px;color:var(--lgray);margin-top:1px">${f.d}</div></div></div>`).join('');
+  const waRes=DB.reservas.filter(r=>r.ori==='WhatsApp');
+  $('tb-wa').innerHTML=waRes.slice(-5).reverse().map(r=>{const a=getAlu(r.alu);const c=getCla(r.cla);return`<tr class="trh"><td style="font-size:12px">${a?.nom?.split(' ')[0]||'?'}</td><td style="font-size:12px">${c?.nom}</td><td><span class="b ${r.est==='confirmada'?'bg2':r.est==='cancelada'?'br2':'ba2'}">${r.est}</span></td><td class="td-mono">${fmtD(r.fecha)}</td></tr>`;}).join('')||`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--lgray);font-size:12px">Sin reservas via WhatsApp</td></tr>`;
+}
+
+function addMsg(txt,from,opts){
+  const c=$('bot-msgs');const d=document.createElement('div');
+  d.className=`bmsg ${from}`;
+  d.innerHTML=`${txt.replace(/\n/g,'<br>').replace(/\*(.*?)\*/g,'<strong>$1</strong>')}<div class="bmsg-time">${timeNow()}</div>`;
+  if(opts&&opts.length){const od=document.createElement('div');od.className='bot-opts';opts.forEach(o=>{const b=document.createElement('div');b.className='bopt';b.textContent=o.lbl;b._botOpt=o;b.onclick=()=>handleOpt(o);od.appendChild(b);});d.appendChild(od);}
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+}
+
+function botReply(txt,opts,ms=700){
+  $('bot-status').textContent='escribiendo…';
+  const c=$('bot-msgs');const t=document.createElement('div');
+  t.className='typing-dots';t.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+  c.appendChild(t);c.scrollTop=c.scrollHeight;
+  setTimeout(()=>{t.remove();addMsg(txt,'bot',opts);$('bot-status').textContent='en línea';},ms);
+}
+
+function showBotMenu(alu){
+  botCtx.alu=alu;
+  var cfg=DB.botConfig||{};
+  var st=getMemStatus(alu);
+  var hoy=new Date();
+  var hasta=alu.hasta?new Date(alu.hasta):null;
+  var dias=hasta?Math.ceil((hasta-hoy)/86400000):0;
+  var clRest=alu.clasesRestantes!==undefined?alu.clasesRestantes:'—';
+  var clTot=alu.clasesTotal||'—';
+  var pagoTxt=alu.pago==='pagado'?'✅ Al día':alu.pago==='pendiente'?'⏳ Pendiente de confirmar':'❌ Vencido';
+
+  if(st==='vencida'){
+    botReply(
+      '¡Hola, *'+alu.nom.split(' ')[0]+'*! 👋\n\n'+
+      '📋 *Tu membresía:*\n'+
+      '• Plan: *'+alu.plan+'*\n'+
+      '• Estado: ❌ *VENCIDA*'+(hasta?' — '+fmtD(alu.hasta):'')+'\n\n'+
+      '⚠️ Para reservar clases debes *renovar tu membresía*.\n¿Deseas hacerlo ahora?',
+      [{lbl:'🔄 Ver planes disponibles',act:'ver_planes_renovar'},
+       {lbl:'💳 Enviar comprobante de pago',act:'pago'},
+       {lbl:'👥 Hablar con administración',act:'atencion_cliente'}]
+    );
+  } else {
+    var memTxt=st==='por_vencer'
+      ?'⚠️ Vence pronto: '+fmtD(alu.hasta)+' ('+dias+' días)'
+      :'✅ Válido hasta '+fmtD(alu.hasta)+' ('+dias+' días)';
+    botReply(
+      '¡Hola, *'+alu.nom.split(' ')[0]+'*! 👋\n\n'+
+      '📋 *Tu membresía:*\n'+
+      '• Plan: *'+alu.plan+'*\n'+
+      '• Clases disponibles: *'+clRest+' de '+clTot+'*\n'+
+      '• '+memTxt+'\n'+
+      '• Pago: '+pagoTxt+'\n\n'+
+      (cfg.menuPrincipal||'¿En qué te puedo ayudar?'),
+      [{lbl:'📅 Reservar clase',act:'ver_clases'},
+       {lbl:'👥 Atención al cliente',act:'atencion_cliente'}]
+    );
+  }
+}
+
+
+function startBot(){
+  $('bot-msgs').innerHTML='';botState='idle';botCtx={};
+  setTimeout(function(){
+    botState='esperando_codigo';
+    botReply(
+      '¡Hola! 👋 Bienvenida a *Auris Pole Studio*\n\n'+
+      '🔐 Por favor ingresa tu *código de acceso*\n'+
+      '_(Los últimos 5 dígitos de tu número de teléfono registrado)_\n\n'+
+      '¿No tienes cuenta aún?',
+      [{lbl:'📝 Registrarme como alumna nueva',act:'registrar'}]
+    );
+  },200);
+}
+
+function resetBot(){startBot();toast('Chat reiniciado');}
+
+function handleOpt(opt){
+  addMsg(opt.lbl,'user');
+  const avail=DB.clases.filter(c=>c.cupos-c.ins>0);
+  if(opt.act==='ver_clases'){
+    botState='eligiendo';
+    if(!avail.length){botReply('Lo sentimos, no hay clases con cupos disponibles en este momento 😔\nIntenta más tarde.');return;}
+    botReply(`Clases disponibles esta semana 📋 (${avail.length} opciones):`,avail.slice(0,8).map(c=>{var libre=c.cupos-c.ins;return {lbl:`${c.nom} · ${c.dia} ${c.hora}h · ${libre} cupo${libre!==1?'s':''}`,act:'elegir_clase',cId:c.id};}));
+  }
+  else if(opt.act==='elegir_clase'){
+    const c=getCla(opt.cId);botCtx.cId=opt.cId;botState='confirmando';
+    const aluSel=botCtx.alu;
+    const cupLibre=c.cupos-c.ins;
+    let paqLine='';
+    if(aluSel&&typeof aluSel.clasesRestantes==='number'){
+      paqLine=`🎟 Clases disponibles en tu paquete: *${aluSel.clasesRestantes}*\n`;
+    }else if(aluSel&&aluSel.plan){
+      paqLine=`🎟 Tu plan: *${aluSel.plan}*\n`;
+    }
+    botReply(`📌 *Resumen de tu reserva:*\n🏷 Clase: *${c.nom}*\n📅 ${c.dia}, ${c.hora}h · ${c.dur} min\n👩‍🏫 ${getInst(c.inst)?.nom||'—'}\n🪑 Cupos disponibles: *${cupLibre}*\n${paqLine}\n¿Confirmas tu lugar?`,[
+      {lbl:'✅ Sí, confirmar reserva',act:'confirmar_res'},
+      {lbl:'↩ Volver al menú',act:'menu'},
+    ]);
+  }
+  else if(opt.act==='confirmar_res'){
+    var simAlu=botCtx.alu?botCtx.alu.id:(DB.alumnas[0]?DB.alumnas[0].id:'a1');
+    var cCR=getCla(botCtx.cId);
+    if(!cCR){botReply('Error al reservar. Intenta de nuevo.',[{lbl:'↩ Menú',act:'menu'}]);return;}
+    var dupCR=DB.reservas.find(function(r){return r.alu===simAlu&&r.cla===botCtx.cId&&r.est!=='cancelada';});
+    if(dupCR){botReply('⚠️ Ya tienes una reserva activa para esta clase.',[{lbl:'📋 Mis reservas',act:'mis_reservas'},{lbl:'↩ Menú',act:'menu'}]);return;}
+    if(cCR.ins>=cCR.cupos){botReply('❌ Esta clase ya no tiene cupos disponibles.',[{lbl:'📅 Ver otros horarios',act:'ver_clases'}]);return;}
+    var aluGuard=getAlu(simAlu);
+    if(aluGuard&&typeof aluGuard.clasesRestantes==='number'&&aluGuard.clasesRestantes<=0){
+      botReply('🎟 Ya usaste todas las clases de tu paquete este periodo.\n\nRenueva tu paquete para seguir reservando.',[{lbl:'🔄 Renovar paquete',act:'ver_planes_renovar'},{lbl:'↩ Menú',act:'menu'}]);return;
+    }
+    var nrCR={id:'r'+DB.ids.res++,alu:simAlu,cla:botCtx.cId,fecha:today(),est:'confirmada',ori:'WhatsApp',notas:'',asistio:false};
+    DB.reservas.push(nrCR);fsSave('reservas',nrCR);
+    cCR.ins++;fsUpdate('clases',cCR.id,{ins:cCR.ins});
+    var aluObjCR=getAlu(simAlu);
+    if(aluObjCR&&aluObjCR.clasesRestantes>0){
+      aluObjCR.clasesRestantes--;
+      fsUpdate('alumnas',aluObjCR.id,{clasesRestantes:aluObjCR.clasesRestantes});
+    }
+    var cfgCR=DB.botConfig||{};
+    var diasCR=Array.isArray(cCR.dias)&&cCR.dias.length?cCR.dias.join(' · '):cCR.dia;
+    botReply(
+      (cfgCR.confirmacionReserva||'✅ *¡Reserva realizada con éxito!*')+'\n\n'+
+      '🏷 *'+cCR.nom+'*\n📅 '+diasCR+' · '+cCR.hora+'h\n\n'+
+      (cfgCR.detallesClase||'📍 Calle del Batán y Española, Cuenca\n\n📋 *Recuerda:*\n• Llega 10 minutos antes\n• Agua · Ropa cómoda · Toalla\n• No se permiten acompañantes'),
+      [{lbl:'📋 Mis reservas',act:'mis_reservas'},{lbl:'↩ Menú',act:'menu'}]
+    );
+    botState='idle';
+    addNotif('wa','Reserva via WhatsApp',(aluObjCR?aluObjCR.nom:'Alumna')+' → '+cCR.nom);
+    actualizarBadges();
+  }
+  else if(opt.act==='confirmar_reserva'){
+    const c=getCla(botCtx.cId);
+    if(!c||c.ins>=c.cupos){botReply('⚠️ Lo sentimos, el último cupo se acaba de tomar mientras confirmabas.\n\n¿Te anoto en lista de espera?',[{lbl:'📋 Lista de espera',act:'espera'},{lbl:'↩ Ver otras clases',act:'ver_clases'}]);return;}
+    const simAlu=botCtx.alu?botCtx.alu.id:(DB.alumnas[0]?DB.alumnas[0].id:'a1');
+    const dup=DB.reservas.find(function(r){return r.alu===simAlu&&r.cla===botCtx.cId&&r.est!=='cancelada';});
+    if(dup){botReply('Ya tienes una reserva activa en esa clase 📋',[ {lbl:'↩ Menú principal',act:'menu'} ]);return;}
+    DB.reservas.push({id:'r'+DB.ids.res++,alu:simAlu,cla:botCtx.cId,fecha:today(),est:'pendiente',ori:'WhatsApp',notas:''});
+    c.ins++;
+    DB.pagos.push({id:'p'+DB.ids.pago++,alu:simAlu,cla:botCtx.cId,monto:c.precio,est:'pendiente',fecha:today()});
+    actualizarBadges();addNotif('wa','Reserva via WhatsApp',(getAlu(simAlu)?getAlu(simAlu).nom:'Alumna')+' → '+c.nom+' '+c.dia);
+    botReply(`🎉 *¡Reserva confirmada!*\nTu lugar en *${c.nom}* (${c.dia} ${c.hora}h) está asegurado.\n\nRealiza el pago de *${fmtCOP(c.precio)}* y envíame el comprobante aquí 👇`,[{lbl:'💳 Enviar comprobante',act:'pago'},{lbl:'↩ Menú principal',act:'menu'}]);
+    botState='idle';rBot();
+  }
+  else if(opt.act==='registrar'){
+    botCtx.alu=null;botCtx.isNueva=true;
+    var paqsNew=(DB.paquetes||[]).filter(function(p){return p.activo;});
+    var inscFee4=+(($('cfg-inscripcion-fee')?.value)||30);
+    botReply(
+      '¡Bienvenida a *Auris Pole Studio*! 🌟\n\n'+
+      '📦 Elige tu *paquete de clases*:\n'+
+      '_(+ pago único de inscripción: *$'+inscFee4+' USD*)_',
+      paqsNew.map(function(p){
+        return {lbl:'★ '+p.nom+' — $'+p.precioMes+'/mes · '+p.desc,
+                act:'_sel_paq',_paqId:p.id,_paqNom:p.nom,
+                _paqP:p.precioMes,_paqCls:(p.clasesMes||p.clases)};
+      })
+    );
+  }
+  else if(opt.act==='mis_reservas'){
+    const simA=botCtx.alu||DB.alumnas[0];
+    const res=simA?DB.reservas.filter(r=>r.alu===simA.id&&r.est!=='cancelada'):[];
+    const dias=simA?Math.ceil((new Date(simA.hasta)-new Date())/86400000):0;
+    const pagoIcon={pagado:'✅',pendiente:'⏳',vencido:'❌'}[simA?.pago]||'—';
+    if(!res.length){
+      botReply(`📋 *${simA?.nom||'—'}*\nPlan *${simA?.plan}* ${pagoIcon} · Vence: ${fmtD(simA?.hasta)} (${dias}d)\n\nNo tienes clases reservadas.`,
+        [{lbl:'📅 Ver clases disponibles',act:'ver_clases'},{lbl:'↩ Menú',act:'menu'}]);return;
+    }
+    botReply(
+      `📋 *Mis Reservas — ${simA?.nom}*\n`+
+      `Plan: *${simA?.plan}* ${pagoIcon} · Vence: *${fmtD(simA?.hasta)}* (${dias}d)\n\n`+
+      res.map(r=>{const c=getCla(r.cla);return`▶ *${c?.nom}* · ${c?.dia} ${c?.hora}h · ${r.est}`;}).join('\n'),
+      [{lbl:'❌ Cancelar clase',act:'cancelar'},{lbl:'📅 Reservar otra',act:'ver_clases'},{lbl:'↩ Menú',act:'menu'}]);
+  }
+  else if(opt.act==='cancelar'){
+    const _aluC=botCtx.alu||DB.alumnas[0];
+    const res=_aluC?DB.reservas.filter(r=>r.alu===_aluC.id&&r.est!=='cancelada'):[];
+    if(!res.length){botReply('No tienes reservas que cancelar.',[ {lbl:'↩ Menú',act:'menu'} ]);return;}
+    botReply('¿Cuál reserva deseas cancelar?\n⚠️ Solo permitido con mínimo 2h de anticipación.',res.map(r=>({lbl:`${getCla(r.cla)?.nom} · ${getCla(r.cla)?.dia} ${getCla(r.cla)?.hora}h`,act:'exec_cancel',rId:r.id})));
+  }
+  else if(opt.act==='exec_cancel'){
+    const r=DB.reservas.find(x=>x.id===opt.rId);const c=getCla(r?.cla);
+    r.est='cancelada';if(c&&c.ins>0)c.ins--;
+    DB.cancelaciones.push({id:'x'+DB.ids.xcan++,alu:r.alu,cla:r.cla,horaCla:c?.hora||'—',cancelo:timeNow(),aTiempo:true,liberado:true,fecha:today()});
+    addNotif('wa','Cancelación via bot',`${getAlu(r.alu)?.nom} — cupo liberado en ${c?.nom}`);
+    botReply(`✅ *Cancelación procesada.*\n*${c?.nom}* (${c?.dia}) fue cancelada.\nEl cupo se liberó automáticamente.`,[{lbl:'📅 Ver otras clases',act:'ver_clases'},{lbl:'↩ Menú',act:'menu'}]);
+    rBot();
+  }
+  else if(opt.act==='pago'){
+    botState='comprobante';
+    botReply('Envíame aquí la *foto de tu comprobante* de transferencia 📸\nLo verificaremos y confirmaremos tu lugar en minutos.');
+  }
+  else if(opt.act==='menu'){botState='idle';setTimeout(()=>startBot(),300);}
+  else if(opt.act==='espera'){botReply('¡Listo! Te anotamos en lista de espera.\nTe avisaremos de inmediato si se libera un cupo 🔔',[{lbl:'↩ Menú principal',act:'menu'}]);}
+  else if(opt.act==='reintentar_codigo'){botState='esperando_codigo';botReply('🔐 Ingresa nuevamente los *últimos 5 dígitos* de tu teléfono registrado:');}
+  else if(opt.act==='atencion_cliente'){
+    var cfg2=DB.botConfig||{};
+    var numAdmin=(cfg2.numeroPrincipal||'').replace(/[^0-9]/g,'');
+    botReply(
+      (cfg2.mensajeAtencion||'Conectándote con nuestra administración 💬\nEn breve alguien te atenderá.'),
+      numAdmin?[{lbl:'💬 Abrir chat con administración',act:'_link_admin'}]:[{lbl:'↩ Menú',act:'menu'}]
+    );
+  }
+  else if(opt.act==='_link_admin'){
+    var cfg3=DB.botConfig||{};
+    var numA=(cfg3.numeroPrincipal||'').replace(/[^0-9]/g,'');
+    var msg=encodeURIComponent('Hola! Me comunico desde el bot de Auris Pole Studio, necesito atención 🙏');
+    window.open('https://wa.me/'+numA+'?text='+msg,'_blank');
+    botReply('✅ Chat abierto. Alguien te atenderá pronto.',[{lbl:'↩ Menú',act:'menu'}]);
+  }
+  else if(opt.act==='ver_planes_renovar'||opt.act==='renovar_mem'){
+    var paqsAct2=(DB.paquetes||[]).filter(function(p){return p.activo;});
+    var inscFee3=botCtx.isNueva?+(($('cfg-inscripcion-fee')?.value)||30):0;
+    var intro=botCtx.isNueva
+      ?'🌟 *Paquetes disponibles:*\n_(+ pago único de inscripción: *$'+inscFee3+' USD*)_'
+      :'🔄 *Renueva tu membresía* — elige paquete:';
+    botReply(intro,
+      paqsAct2.map(function(p){
+        return {lbl:'★ '+p.nom+' — $'+p.precioMes+'/mes · '+p.desc,
+                act:'_sel_paq',_paqId:p.id,_paqNom:p.nom,
+                _paqP:p.precioMes,_paqCls:(p.clasesMes||p.clases)};
+      })
+    );
+  }
+  else if(opt.act==='_sel_paq'){
+    botCtx.paqSel=opt;
+    var frecs=(DB.frecPago||[
+      {id:'fp1',nom:'Mensual',meses:1,factor:1,desc:'Sin descuento'},
+      {id:'fp2',nom:'Trimestral',meses:3,factor:2.85,desc:'5% desc.'},
+      {id:'fp3',nom:'Semestral',meses:6,factor:5.4,desc:'10% desc.'},
+      {id:'fp4',nom:'Anual',meses:12,factor:10.2,desc:'15% desc.'},
+    ]);
+    botReply(
+      '📦 *'+opt._paqNom+'*\n'+opt._paqCls+' clases · $'+opt._paqP+'/mes\n\n'+
+      '💳 ¿Con qué frecuencia de pago?',
+      frecs.map(function(f){
+        var total=Math.round(opt._paqP*f.factor);
+        return {lbl:f.nom+' — $'+total+' USD · '+f.desc,
+                act:'_sel_frec',_frecId:f.id,_frecNom:f.nom,
+                _frecMeses:f.meses,_frecTotal:total};
+      })
+    );
+  }
+  else if(opt.act==='_sel_frec'){
+    var paqS=botCtx.paqSel||{};
+    var frecS=opt;
+    var inscF2=botCtx.isNueva?+(($('cfg-inscripcion-fee')?.value)||30):0;
+    var totalFin=frecS._frecTotal+(inscF2||0);
+    var aluRen3=botCtx.alu;
+    if(aluRen3){
+      // RENOVACIÓN
+      var hoyR3=new Date();
+      var base3=aluRen3.hasta&&new Date(aluRen3.hasta)>hoyR3?new Date(aluRen3.hasta):new Date();
+      base3.setMonth(base3.getMonth()+frecS._frecMeses);
+      aluRen3.hasta=base3.toISOString().slice(0,10);
+      aluRen3.plan=paqS._paqNom+' · '+frecS._frecNom;
+      aluRen3.pago='pendiente';
+      aluRen3.clasesRestantes=paqS._paqCls*frecS._frecMeses;
+      aluRen3.clasesTotal=aluRen3.clasesRestantes;
+      aluRen3.paqId=paqS._paqId;
+      fsSave('alumnas',aluRen3);
+      var pRen2={id:'p'+DB.ids.pago++,alu:aluRen3.id,cla:'renovacion',
+        monto:frecS._frecTotal,est:'pendiente',fecha:today(),
+        desc:'Renovación '+paqS._paqNom+' '+frecS._frecNom};
+      DB.pagos.push(pRen2);fsSave('pagos',pRen2);
+      addNotif('sys','Renovación via bot',aluRen3.nom+' — '+paqS._paqNom);
+      actualizarBadges();
+      botReply(
+        '✅ *¡Membresía renovada!*\n\n'+
+        '📦 *'+paqS._paqNom+'*\n'+
+        '• '+paqS._paqCls+' clases/mes · '+frecS._frecNom+'\n'+
+        '• Válido hasta: *'+fmtD(aluRen3.hasta)+'*\n'+
+        '• *Total: $'+frecS._frecTotal+' USD*\n\n'+
+        '⏳ Pago pendiente · Puedes reservar ya.',
+        [{lbl:'📅 Reservar clase',act:'ver_clases'},
+         {lbl:'💳 Enviar comprobante',act:'pago'}]
+      );
+    } else {
+      // NUEVA INSCRIPCIÓN — pedir datos
+      botCtx.frecSel=frecS;
+      botState='reg_nom';
+      botReply(
+        '✅ *Resumen de tu inscripción:*\n\n'+
+        '📦 *'+paqS._paqNom+'*\n'+
+        '• '+paqS._paqCls+' clases/mes · '+frecS._frecNom+'\n'+
+        (inscF2?'• Inscripción única: $'+inscF2+' USD\n':'')+
+        '• Plan: $'+frecS._frecTotal+' USD\n'+
+        '• *Total a pagar: $'+totalFin+' USD*\n\n'+
+        '📝 Ahora necesito tus datos:\n¿Cuál es tu *nombre completo*?'
+      );
+    }
+  }
+  else if(opt.act==='_UNUSED_renovar_mem_old'){
+    var aluRen=botCtx.alu;
+    if(!aluRen){botReply('Por favor identifícate primero.',[{lbl:'🔄 Reiniciar',act:'menu'}]);return;}
+    var paqsAct=(DB.paquetes||[]).filter(function(p){return p.activo;});
+    botReply(
+      '🔄 *Renovar membresía — '+aluRen.nom.split(' ')[0]+'*\n\n'+
+      'Selecciona tu paquete:',
+      paqsAct.map(function(p){
+        return {lbl:p.nom+' · '+p.clasesMes+' clases/mes · $'+p.precioMes+'/mes',
+                act:'_ren_paq',_paqId:p.id,_paqNom:p.nom,_paqP:p.precioMes,_paqCls:p.clasesMes};
+      })
+    );
+  }
+  else if(opt.act==='_ren_paq'&&botCtx.alu){
+    botCtx.renPaq=opt;
+    var frecs=DB.frecuencias||[];
+    botReply('📋 ¿Con qué frecuencia de pago?',
+      frecs.map(function(f){
+        var total=calcPrecioPaquete({precioMes:opt._paqP},f);
+        var lbl=f.nom+' — $'+total.toFixed(0)+' USD';
+        if(f.descuento>0) lbl+=' ('+f.descuento+'% dcto)';
+        return {lbl:lbl,act:'_ren_frec',_frecId:f.id,_frecNom:f.nom,_frecMeses:f.meses,_frecTotal:total};
+      })
+    );
+  }
+  else if(opt.act==='_ren_frec'&&botCtx.alu&&botCtx.renPaq){
+    var aluR=botCtx.alu;
+    var paqR=botCtx.renPaq;
+    var frecR=opt;
+    var hoyR=new Date();
+    // Extend from today or from current hasta (whichever is later)
+    var baseR=aluR.hasta&&new Date(aluR.hasta)>hoyR?new Date(aluR.hasta):new Date(hoyR);
+    var nuevaHasta=new Date(baseR);
+    nuevaHasta.setMonth(nuevaHasta.getMonth()+frecR._frecMeses);
+    aluR.hasta=nuevaHasta.toISOString().slice(0,10);
+    aluR.plan=paqR._paqNom+' · '+frecR._frecNom;
+    aluR.pago='pendiente';
+    fsSave('alumnas',aluR);
+    DB.pagos.push({id:'p'+DB.ids.pago++,alu:aluR.id,cla:'renovacion',
+      monto:frecR._frecTotal,est:'pendiente',fecha:today(),
+      desc:paqR._paqNom+' '+frecR._frecNom});
+    fsSave('pagos',DB.pagos[DB.pagos.length-1]);
+    addNotif('sys','Renovación via bot',aluR.nom+' — '+paqR._paqNom+' '+frecR._frecNom);
+    actualizarBadges();
+    botReply(
+      '✅ *¡Membresía renovada!*\n\n'+
+      '• Plan: *'+aluR.plan+'*\n'+
+      '• Válido hasta: *'+fmtD(aluR.hasta)+'*\n'+
+      '• Total a pagar: *$'+frecR._frecTotal.toFixed(0)+' USD*\n\n'+
+      '⏳ Estado: *Pendiente de pago*\nPuedes reservar tus clases de inmediato.\n'+
+      'Envíanos el comprobante para confirmar.',
+      [{lbl:'📅 Reservar una clase',act:'ver_clases'},{lbl:'💳 Enviar comprobante',act:'pago'},{lbl:'↩ Menú',act:'menu'}]
+    );
+  }
+}
+
+function sendBotText(){
+  const v=$('bot-input').value.trim();if(!v)return;
+  addMsg(v,'user');$('bot-input').value='';
+
+  // ── CODE VERIFICATION ──────────────────────────────────────────
+  if(botState==='esperando_codigo'){
+    const digits=v.replace(/[^0-9]/g,'');
+    if(digits.length<4){
+      botReply('❌ Por favor ingresa los *últimos 5 dígitos* de tu teléfono registrado.\nEjemplo: si tu número es +593 98 452 *1543*, tu código es *21543*');
+      return;
+    }
+    const found=findAluByCode(digits);
+    if(found){
+      botState='idle';
+      showBotMenu(found);
+    } else {
+      // 2nd chance
+      if(!botCtx.intentos) botCtx.intentos=0;
+      botCtx.intentos++;
+      if(botCtx.intentos>=2){
+        botCtx.intentos=0;
+        botState='idle';
+        botReply(
+          '❌ No encontré una cuenta con ese código.\n\n'+
+          '¿Quieres registrarte como alumna nueva o verificar tu número?',
+          [{lbl:'📝 Registrarme',act:'registrar'},{lbl:'🔄 Intentar de nuevo',act:'reintentar_codigo'}]
+        );
+      } else {
+        botReply('❌ Código no encontrado. Por favor verifica los *últimos 5 dígitos* de tu teléfono registrado e intenta de nuevo.');
+      }
+    }
+    return;
+  }
+
+  if(botState==='reg_nom'){botCtx.nom=v;botState='reg_tel';botReply('Perfecto, *'+v+'* 😊\n\n📱 ¿Cuál es tu *teléfono* (WhatsApp)?');return;}
+  if(botState==='reg_tel'){botCtx.tel=v;botState='reg_email';botReply('📧 ¿Cuál es tu *correo electrónico*?');return;}
+  if(botState==='reg_email'){botCtx.email=v;botState='reg_emerg';botReply('🆘 *Contacto de emergencia*\n(Nombre y teléfono · Ej: Mamá · 310 000 0000)');return;}
+  if(botState==='reg_emerg'){
+    botCtx.emerg=v;
+    // Show package selection (already shown at start, but if they came here via data collection)
+    if(botCtx.paqSel&&botCtx.frecSel){
+      // Already selected plan — create account
+      _finalizarInscripcion();
+    } else {
+      // Redirect to plan selection
+      handleOpt({act:'registrar'});
+    }
+    return;
+  }
+
+  if(botState==='comprobante'){
+    botReply('📸 *Comprobante recibido.*\nLo estamos revisando con la administración.\n\n✅ Te confirmaremos en breve.',[{lbl:'↩ Menú principal',act:'menu'}]);
+    botState='idle';return;
+  }
+  if(botState==='idle'||botState===''){
+    const l=v.toLowerCase();
+    if(l.includes('hola')||l.includes('buenas'))botReply('¡Hola! 😊 ¿En qué puedo ayudarte?',[{lbl:'📅 Ver clases',act:'ver_clases'},{lbl:'📋 Mis reservas',act:'mis_reservas'}]);
+    else if(l.includes('clase')||l.includes('horario'))handleOpt({lbl:'📅 Ver clases disponibles',act:'ver_clases'});
+    else if(l.includes('pago')||l.includes('comprobante'))handleOpt({lbl:'💳 Enviar comprobante de pago',act:'pago'});
+    else if(l.includes('cancel'))handleOpt({lbl:'❌ Cancelar una clase',act:'cancelar'});
+    else botReply('Entendido 😊 ¿Puedo ayudarte con algo más?',[{lbl:'📅 Ver clases disponibles',act:'ver_clases'},{lbl:'📋 Mis reservas',act:'mis_reservas'}]);
+    return;
+  }
+  botReply('Entendido 😊 ¿Hay algo más en lo que pueda ayudarte?',[{lbl:'📅 Ver clases disponibles',act:'ver_clases'},{lbl:'📋 Mis reservas',act:'mis_reservas'}]);
+}
+
+// Bot option buttons: handle _reg_clase and _reg_plan via data stored on button
+document.addEventListener('click',e=>{
+  if(!e.target.classList.contains('bopt'))return;
+  const lockAll=()=>e.target.closest('.bot-opts')?.querySelectorAll('.bopt').forEach(b=>b.style.pointerEvents='none');
+  const opt=e.target._botOpt;
+  if(!opt)return;
+  if(opt.act==='_reg_clase'&&botState==='reg_clase'){
+    botCtx.claNom=opt._claNom;botCtx.claPrecio=opt._claPrecio||0;
+    botState='reg_plan';lockAll();
+    botReply(`¡Excelente: *${botCtx.claNom}* 💪\n\n📋 ¿Qué *plan* eliges?\n_(Incluye pago único de inscripción: ${fmtCOP(+($('cfg-inscripcion-fee')?.value||30))})_`,
+      DB.planes.map(p=>({lbl:`${p.nom} — ${fmtCOP(p.precio)} · ${p.desc}`,act:'_reg_plan',_planNom:p.nom,_planPrecio:p.precio,_planDur:p.dur})));
+  } else if(opt.act==='_reg_frec'&&botState==='reg_frecuencia'){
+    var inscFee2=+(($('cfg-inscripcion-fee')?.value)||30);
+    var paqSel=botCtx.regPaq||{};
+    var frecSel=opt;
+    var totalReg=frecSel._frecTotal+inscFee2;
+    var finReg=new Date();finReg.setMonth(finReg.getMonth()+frecSel._frecMeses);
+    var newAReg={id:'a'+DB.ids.alu++,nom:botCtx.nom||'Nueva',tel:botCtx.tel||'—',
+      email:botCtx.email||'',niv:paqSel._paqNom||'—',
+      plan:paqSel._paqNom+' · '+frecSel._frecNom,pago:'pendiente',
+      notas:'Emergencia: '+(botCtx.emerg||'—')+' | Via Bot',
+      desde:today(),hasta:finReg.toISOString().slice(0,10),ref:''};
+    DB.alumnas.push(newAReg);fsSave('alumnas',newAReg);botCtx.alu=newAReg;botCtx.isNueva=false;
+    DB.pagos.push({id:'p'+DB.ids.pago++,alu:newAReg.id,cla:'inscripcion',
+      monto:totalReg,est:'pendiente',fecha:today(),
+      desc:'Inscripción + '+paqSel._paqNom+' '+frecSel._frecNom});
+    fsSave('pagos',DB.pagos[DB.pagos.length-1]);
+    lockAll();
+    botReply(
+      '🎉 *¡Inscripción completada!*\n\n'+
+      '👤 *'+newAReg.nom+'*\n'+
+      '📱 '+botCtx.tel+' · 📧 '+(botCtx.email||'—')+'\n\n'+
+      '📦 *Paquete:* '+paqSel._paqNom+'\n'+
+      '📅 '+paqSel._paqCls+' clases/mes · '+frecSel._frecNom+'\n'+
+      '🗓 Válido hasta: *'+fmtD(newAReg.hasta)+'*\n\n'+
+      '💰 *A pagar:*\n'+
+      '• Inscripción (1 vez): $'+inscFee2+' USD\n'+
+      '• '+paqSel._paqNom+' '+frecSel._frecNom+': $'+frecSel._frecTotal+' USD\n'+
+      '• *Total: $'+totalReg+' USD*\n\n'+
+      '⏳ Estado: *Pendiente de pago*\nPuedes reservar clases de inmediato.\n'+
+      'Envíanos el comprobante para confirmar 📲',
+      [{lbl:'📅 Reservar mi primera clase',act:'ver_clases'},{lbl:'💳 Enviar comprobante',act:'pago'},{lbl:'↩ Menú',act:'menu'}]
+    );
+    botState='idle';addNotif('sys','Nueva alumna via bot',newAReg.nom+' — '+paqSel._paqNom);actualizarBadges();
+  }
+});
+
+// ══════════════════
+//  NOTIFICACIONES
+// ══════════════════
+const NOTIF_REGLAS=[
+  {ico:'⏰',t:'Recordatorio 24h antes',d:'WhatsApp automático el día previo'},
+  {ico:'⏰',t:'Recordatorio 2h antes',d:'Confirmación final de asistencia'},
+  {ico:'✅',t:'Confirmación de reserva',d:'Al crear reserva vía bot o admin'},
+  {ico:'💳',t:'Confirmación de pago',d:'Al verificar comprobante en el panel'},
+  {ico:'🚫',t:'Aviso clase llena',d:'Notifica cuando no hay cupos'},
+  {ico:'📋',t:'Aviso lista de espera',d:'Al liberarse un cupo automáticamente'},
+  {ico:'⚠️',t:'Membresía por vencer',d:'7 días antes del vencimiento'},
+];
+
+function addNotif(tipo,titulo,desc){
+  const _n={id:'n'+DB.ids.notif++,tipo,titulo,desc,hora:timeNow(),est:'enviado'};
+  DB.notifs.unshift(_n);fsSave('notifs',_n);
+  actualizarBadges();
+}
+
+function rNotifs(){
+  $('notif-reglas').innerHTML=NOTIF_REGLAS.map(r=>`<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--line)"><span style="font-size:16px;flex-shrink:0">${r.ico}</span><div style="flex:1"><div style="font-size:12px;font-weight:600">${r.t}</div><div style="font-size:11px;color:var(--lgray);margin-top:1px">${r.d}</div></div><span class="b bg2">Activo</span></div>`).join('');
+  const wa=DB.notifs.filter(n=>n.tipo==='wa').length;
+  const sys=DB.notifs.filter(n=>n.tipo==='sys').length;
+  const pay=DB.notifs.filter(n=>n.tipo==='pay').length;
+  $('notif-stats').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+    <div style="text-align:center;padding:14px;background:var(--wabg);border-radius:3px"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:600;color:var(--wa)">${wa}</div><div style="font-size:10px;color:var(--lgray);margin-top:3px;font-family:'DM Mono',monospace">WHATSAPP</div></div>
+    <div style="text-align:center;padding:14px;background:var(--gbg);border-radius:3px"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:600;color:var(--green)">${pay}</div><div style="font-size:10px;color:var(--lgray);margin-top:3px;font-family:'DM Mono',monospace">PAGOS</div></div>
+    <div style="text-align:center;padding:14px;background:var(--beige);border-radius:3px"><div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:600;color:var(--dark)">${sys}</div><div style="font-size:10px;color:var(--lgray);margin-top:3px;font-family:'DM Mono',monospace">SISTEMA</div></div>
+  </div>`;
+  $('notif-hist').innerHTML=DB.notifs.slice(0,15).map(n=>{
+    const t={wa:'nwa',sys:'nsys',pay:'npay',warn:'nwarn'}[n.tipo]||'nsys';
+    const ic={wa:'💬',sys:'⚙',pay:'💳',warn:'⚠️'}[n.tipo]||'🔔';
+    return`<div class="notif-item ${t}"><span class="n-ico">${ic}</span><div class="n-body"><div class="n-title">${n.titulo}</div><div class="n-desc">${n.desc}</div><div class="n-time">${n.hora}</div></div><span class="b bg2">${n.est}</span></div>`;
+  }).join('');
+}
+
+function enviarRecords(){
+  const n=DB.alumnas.length;
+  addNotif('wa',`Recordatorios enviados (${n})`,`Recordatorio 24h a todas las alumnas con clase mañana`);
+  toast(`${n} recordatorios enviados vía WhatsApp`,'ok');rNotifs();
+}
+
+// ══════════════════
+//  PAGOS
+// ══════════════════
+let tabPago='pendiente';
+function rPagos(){
+  let lista=DB.pagos;if(tabPago!=='todos')lista=lista.filter(p=>p.est===tabPago);
+  const pend=DB.pagos.filter(p=>p.est==='pendiente').length;
+  $('pend-ct').textContent=pend>0?`(${pend})`:'';
+  $('lista-pagos').innerHTML=lista.length?lista.map(p=>{
+    const a=getAlu(p.alu);const c=getCla(p.cla);
+    return`<div class="pcard">
+      <div class="pcard-thumb">📸</div>
+      <div class="pcard-info"><div class="pcard-name">${a?.nom||'—'}</div><div class="pcard-det">${c?.nom||'—'} · ${c?.dia} ${c?.hora}h · ${fmtD(p.fecha)}</div><span class="b ${p.est==='verificado'?'bg2':p.est==='rechazado'?'br2':'ba2'}" style="margin-top:5px;display:inline-block">${p.est}</span></div>
+      <div class="pcard-amt">${fmtCOP(p.monto)}</div>
+      <div class="pcard-acts">
+        ${p.est==='pendiente'?`<button class="btn sm bg" onclick="verPago('${p.id}')">✓ Verificar</button><button class="btn sm br" onclick="rechazarPago('${p.id}')">✕</button>`:''}
+        ${p.est==='rechazado'?`<button class="btn sm bo" onclick="verPago('${p.id}')">Re-verificar</button>`:''}
+        ${p.est==='verificado'?`<span class="b bg2">APROBADO</span>`:''}
+      </div>
+    </div>`;
+  }).join(''):`<div style="text-align:center;padding:52px;color:var(--lgray);font-size:14px">Sin pagos en esta categoría</div>`;
+}
+
+function setTabPago(v,el){tabPago=v;document.querySelectorAll('#v-pagos .tab').forEach(t=>t.classList.remove('on'));el.classList.add('on');rPagos();}
+
+function verPago(id){
+  const p=DB.pagos.find(x=>x.id===id);p.est='verificado';
+  const r=DB.reservas.find(x=>x.alu===p.alu&&x.cla===p.cla&&x.est!=='cancelada');
+  if(r)r.est='confirmada';fsUpdate('reservas',r.id,{est:'confirmada'});
+  addNotif('pay','Pago verificado',`${getAlu(p.alu)?.nom} — ${fmtCOP(p.monto)} confirmado`);
+  actualizarBadges();rPagos();rDash();toast('Pago verificado · reserva confirmada','ok');
+}
+
+function rechazarPago(id){
+  confirm2('Rechazar Pago','¿Rechazar este comprobante de pago?',()=>{
+    DB.pagos.find(x=>x.id===id).est='rechazado';actualizarBadges();rPagos();toast('Pago rechazado');
+  },'br');
+}
+
+// ══════════════════
+//  MEMBRESÍAS
+// ══════════════════
+let editPlan=null;
+function rMemb(){
+  var el=$('v-membresias');if(!el)return;
+  var paquetes=DB.paquetes||[];
+  var frecuencias=DB.frecuencias||DB.frecPago||[];
+  el.innerHTML=
+    '<div class="ch"><div class="ch-t">Paquetes de Membresía</div>'+
+    '<button class="btn sm bd" onclick="openPaquete()">+ Nuevo Paquete</button></div>'+
+    '<div style="overflow-x:auto"><table class="tbl"><thead><tr>'+
+    '<th>Paquete</th><th>Clase Base</th><th>Clases/mes</th><th>Precio/mes</th><th>Estado</th><th>Acciones</th>'+
+    '</tr></thead><tbody>'+
+    paquetes.map(function(p){
+      return '<tr>'+
+        '<td style="font-weight:600">'+p.nom+'</td>'+
+        '<td>'+(p.claseBase||'—')+'</td>'+
+        '<td style="font-family:DM Mono,monospace;text-align:center">'+(p.clasesMes||p.clases||0)+' clases</td>'+
+        '<td style="font-family:DM Mono,monospace">$'+p.precioMes+'/mes</td>'+
+        '<td><span class="b '+(p.activo?'bk':'bgr')+'">'+( p.activo?'Activo':'Inactivo')+'</span></td>'+
+        '<td><div style="display:flex;gap:6px">'+
+        '<button class="btn xs bo" data-act="edit-paq" data-id="'+p.id+'">✎ Editar</button>'+
+        '<button class="btn xs br" data-act="del-paq" data-id="'+p.id+'" data-nom="'+p.nom+'">✕</button>'+
+        '</div></td>'+
+        '</tr>';
+    }).join('')+
+    '</tbody></table></div>'+
+    '<div class="ch" style="margin-top:20px"><div class="ch-t">Frecuencias de Pago</div></div>'+
+    '<div style="overflow-x:auto"><table class="tbl"><thead><tr>'+
+    '<th>Frecuencia</th><th>Duración</th><th>Descuento</th>'+
+    '</tr></thead><tbody>'+
+    frecuencias.map(function(f){
+      var dscto=(f.descuento!==undefined)?f.descuento:Math.round((f.meses-(f.factor||f.meses))/f.meses*100);
+      return '<tr>'+
+        '<td style="font-weight:600">'+f.nom+'</td>'+
+        '<td>'+f.meses+' mes'+(f.meses!==1?'es':'')+'</td>'+
+        '<td style="color:var(--green)">'+dscto+'%</td>'+
+        '</tr>';
+    }).join('')+
+    '</tbody></table></div>';
+  // Event delegation for edit/del paquetes (onclick = replaces, no stacking)
+  el.onclick=function(e){
+    var btn=e.target.closest('[data-act]');if(!btn)return;
+    var act=btn.dataset.act,id=btn.dataset.id;
+    if(act==='edit-paq'){openPaquete(id);}
+    else if(act==='del-paq'){
+      confirm2('Eliminar Paquete','¿Eliminar "'+btn.dataset.nom+'"?',function(){
+        DB.paquetes=DB.paquetes.filter(function(p){return p.id!==id;});
+        fsDelete('paquetes',id);rMemb();
+      },'br');
+    }
+  };
+}
+// Paquete modal (simple prompt approach)
+function openPaquete(id){
+  var p=id?DB.paquetes.find(function(x){return x.id===id;}):null;
+  var nom=prompt('Nombre del paquete:',p?p.nom:'Clase Básica');
+  if(!nom)return;
+  var claseBase=prompt('Clase base (nombre):',p?p.claseBase:'Pole Básico');if(!claseBase)return;
+  var clasesMes=parseInt(prompt('Clases por mes:',p?p.clasesMes:4));if(!clasesMes)return;
+  var precioMes=parseFloat(prompt('Precio mensual (USD):',p?p.precioMes:120));if(!precioMes)return;
+  if(p){
+    Object.assign(p,{nom:nom,claseBase:claseBase,clasesMes:clasesMes,clases:clasesMes,precioMes:precioMes,activo:true});
+    fsSave('paquetes',p);
+  } else {
+    var np={id:'pk'+DB.ids.paq++,nom:nom,claseBase:claseBase,clasesMes:clasesMes,clases:clasesMes,precioMes:precioMes,meses:1,desc:clasesMes+' clases al mes',activo:true};
+    DB.paquetes.push(np);fsSave('paquetes',np);
+  }
+  rMemb();toast('Paquete guardado','ok');
+}
+function rReportes(){
+  const totalIng=DB.pagos.filter(p=>p.est==='verificado').reduce((a,p)=>a+p.monto,0);
+  const ocupGlobal=DB.clases.length?Math.round(DB.clases.reduce((a,c)=>a+c.ins,0)/DB.clases.reduce((a,c)=>a+c.cupos,0)*100):0;
+  const waRes=DB.reservas.filter(r=>r.ori==='WhatsApp').length;
+  const retPct=DB.alumnas.filter(a=>a.pago==='pagado').length;
+  $('rep-stats').innerHTML=`
+    <div class="scard c2"><div class="scard-n">${fmtCOP(totalIng).replace('COP','').trim()}</div><div class="scard-l">Ingresos Verificados</div><div class="scard-s">PAGOS CONFIRMADOS</div></div>
+    <div class="scard c3"><div class="scard-n">${ocupGlobal}%</div><div class="scard-l">Ocupación Global</div><div class="scard-s">PROMEDIO TODAS LAS CLASES</div></div>
+    <div class="scard c5"><div class="scard-n">${waRes}</div><div class="scard-l">Reservas via WhatsApp</div><div class="scard-s">BOT AUTOMATIZADO</div></div>
+    <div class="scard c1"><div class="scard-n">${retPct}</div><div class="scard-l">Alumnas al Día</div><div class="scard-s">MEMBRESÍA VIGENTE</div></div>`;
+  // Chart ingresos
+  const meses=['Ene','Feb','Mar','Abr','May','Jun'];
+  const vals=[420000,680000,510000,790000,620000,850000];
+  const max=Math.max(...vals);
+  $('chart-ingresos').innerHTML=vals.map((v,i)=>`<div class="cbar" data-v="${fmtCOP(v)}" style="height:${Math.round(v/max*100)}%;background:${i===5?'var(--black)':'var(--beige2)'}"></div>`).join('');
+  $('chart-meses').innerHTML=meses.map(m=>`<div class="chart-lbl">${m}</div>`).join('');
+  // Chart ocupación
+  const clsShow=DB.clases.slice(0,6);const maxO=Math.max(...clsShow.map(c=>c.cupos));
+  $('chart-ocup').innerHTML=clsShow.map(c=>{const p=c.ins/c.cupos;const clr=p>=1?'var(--red)':p>=.8?'var(--tan)':'var(--green)';return`<div class="cbar" data-v="${Math.round(p*100)}%" style="height:${Math.round(p*100)}%;background:${clr}"></div>`;}).join('');
+  $('chart-clases-lbl').innerHTML=clsShow.map(c=>`<div class="chart-lbl">${c.nom.split(' ')[1]||c.nom.slice(0,4)}</div>`).join('');
+  // Distribución nivel
+  const nivs={Básico:0,Intermedio:0,Avanzado:0};DB.alumnas.forEach(a=>{if(nivs[a.niv]!==undefined)nivs[a.niv]++;});
+  $('nivel-dist').innerHTML=Object.entries(nivs).map(([n,v])=>{
+    const colors={Básico:'var(--dark)',Intermedio:'var(--tan2)',Avanzado:'var(--tan)'};
+    const pct=DB.alumnas.length?Math.round(v/DB.alumnas.length*100):0;
+    return`<div style="flex:1;text-align:center"><div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:${colors[n]}">${v}</div><div style="font-size:11px;color:var(--lgray);margin-top:3px">${n}</div><div style="height:5px;background:var(--beige);margin-top:8px;border-radius:3px"><div style="height:100%;background:${colors[n]};width:${pct}%;border-radius:3px;transition:.5s"></div></div><div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--lgray);margin-top:4px">${pct}%</div></div>`;
+  }).join('');
+  // Fuente de reservas
+  const waC=DB.reservas.filter(r=>r.ori==='WhatsApp').length;
+  const adC=DB.reservas.filter(r=>r.ori==='Admin').length;
+  const tot=waC+adC;
+  $('fuente-dist').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+    ${[['💬 WhatsApp Bot',waC,'var(--wa)'],['⚙ Admin Manual',adC,'var(--dark)']].map(([l,v,c])=>{
+      const pct=tot?Math.round(v/tot*100):0;
+      return`<div><div style="display:flex;justify-content:space-between;margin-bottom:5px"><span style="font-size:12px">${l}</span><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--lgray)">${v} (${pct}%)</span></div><div class="prog"><div class="pf" style="width:${pct}%;background:${c}"></div></div></div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ══════════════════
+//  CONFIGURACIÓN
+// ══════════════════
+function rConfig(){
+  const toggles=[
+    {id:'t1',t:'Recordatorio 24h antes de clase',d:'Envío automático via WhatsApp'},
+    {id:'t2',t:'Recordatorio 2h antes de clase',d:'Confirmación final de asistencia'},
+    {id:'t3',t:'Notificación de pago verificado',d:'Aviso al alumna cuando se aprueba'},
+    {id:'t4',t:'Alerta de clase llena',d:'Notifica a admin cuando se llena un cupo'},
+    {id:'t5',t:'Aviso de membresía por vencer',d:'7 días antes del vencimiento'},
+    {id:'t6',t:'Bienvenida a nueva alumna',d:'Mensaje de bienvenida al registrarse'},
+  ];
+  $('cfg-notifs').innerHTML=toggles.map(t=>`<div class="toggle-wrap"><div><div class="toggle-lbl">${t.t}</div><div class="toggle-sub">${t.d}</div></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>`).join('');
+  $('cfg-planes').innerHTML=DB.planes.map(p=>`<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><span style="font-size:13px;font-weight:500">${p.nom}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--lgray)">${fmtCOP(p.precio)} · ${p.dur}m</span></div>`).join('');
+}
+
+function saveConfig(){toast('Configuración guardada','ok');}
+
+// ══════════════════
+//  BADGES & INIT
+// ══════════════════
+function actualizarBadges(){
+  const p=DB.pagos.filter(x=>x.est==='pendiente').length;
+  try{const sb=$('sb-pagos');if(sb){sb.textContent=p;sb.style.display=p>0?'':'none';}}catch(e){}
+  try{const nn=$('nn-count');if(nn){nn.textContent=DB.notifs.length;nn.style.display=DB.notifs.length>0?'':'none';}}catch(e){}
+}
+
+function setDate(){const _d=document.getElementById('tb-date');if(!_d)return;
+  const d=new Date();const dias=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  const meses=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  $('tb-date').textContent=`${dias[d.getDay()]} ${d.getDate()} ${meses[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+// ══ INIT ══
+setDate();
+actualizarBadges();
+goView('dashboard');
+
+// ══════════════════════════════════════════════
+//  LANDING PAGE & ACCESS CODE SYSTEM
+// ══════════════════════════════════════════════
+
+// Default access code (stored in localStorage)
+function getAccessCode(){return localStorage.getItem('ap_access_code')||'AURIS2025';}
+function setAccessCode(c){localStorage.setItem('ap_access_code',c);}
+
+// Landing vs CRM toggle
+function showLanding(){
+  const lp=document.getElementById('landing-page');
+  const wa=document.getElementById('wa-float-btn');
+  const sh=document.querySelector('.shell');
+  if(lp)lp.style.display='flex';
+  if(wa)wa.style.display='flex';
+  if(sh)sh.style.display='none';
+  // Restore body scroll for landing page
+  document.body.style.overflow='';
+  document.body.style.height='';
+  document.documentElement.style.overflow='';
+  document.documentElement.style.height='';
+  window.scrollTo(0,0);
+  try{renderLandingClases();}catch(e){console.error('landing clases error',e);}
+}
+function showCRM(){
+  const lp=document.getElementById('landing-page');
+  const waBtn=document.getElementById('wa-float-btn');
+  const shell=document.querySelector('.shell');
+  if(lp)lp.style.display='none';
+  if(waBtn)waBtn.style.display='none';
+  if(shell)shell.style.display='flex';
+  // Lock body scroll for CRM (fixed layout)
+  document.body.style.overflow='hidden';
+  document.body.style.height='100%';
+  setDate();
+  if(typeof actualizarBadges==='function')actualizarBadges();
+  if(typeof goView==='function')goView('dashboard');
+}
+
+// Render clases on landing
+function renderLandingClases(){
+  const wrap=document.getElementById('lp-clases');
+  if(!wrap)return;
+  const today=new Date();today.setHours(0,0,0,0);
+  // Only active classes
+  const activas=DB.clases.filter(function(c){
+    if(!c.fechaFin)return true;
+    const fin=new Date(c.fechaFin);fin.setHours(23,59,59,0);
+    return fin>=today;
+  });
+  if(!activas.length){
+    wrap.innerHTML='<div style="text-align:center;grid-column:1/-1;color:rgba(255,255,255,.3);font-family:DM Mono,monospace;font-size:11px;letter-spacing:.14em;padding:60px 20px">PRÓXIMAMENTE · MÁS CLASES DISPONIBLES</div>';
+    return;
+  }
+  // Group by class name (merge days of same class together)
+  const DAYS_ORDER=['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+  const grouped={};
+  activas.forEach(function(c){
+    if(!grouped[c.nom]){grouped[c.nom]={c:c,dias:[]};}
+    if(c.dia&&!grouped[c.nom].dias.includes(c.dia))grouped[c.nom].dias.push(c.dia);
+  });
+  // Sort dias within each group
+  Object.values(grouped).forEach(function(g){
+    g.dias.sort(function(a,b){return DAYS_ORDER.indexOf(a)-DAYS_ORDER.indexOf(b);});
+  });
+  const waNum=localStorage.getItem('ap_wa_num')||'593984521543';
+  let out='';
+  Object.values(grouped).forEach(function(g){
+    const c=g.c;
+    const dias=g.dias.length?g.dias.join(' · '):'—';
+    const inst=getInst(c.inst);
+    const instNom=inst?inst.nom:'Por confirmar';
+    const waMsg=encodeURIComponent('Hola! Me interesa reservar una clase de '+c.nom+' en Auris Pole Studio 🌟');
+    out+='<div class="lp-sc">'
+      +'<div class="lp-sc-nom">'+c.nom+'</div>'
+      +'<div class="lp-sc-rows">'
+      +'<div class="lp-sc-row"><span class="lp-sc-lbl">Clases</span><span class="lp-sc-val">'+dias+'</span></div>'
+      +'<div class="lp-sc-row"><span class="lp-sc-lbl">Instructor/a</span><span class="lp-sc-val">'+instNom+'</span></div>'
+      +'<div class="lp-sc-row"><span class="lp-sc-lbl">Hora</span><span class="lp-sc-val">'+c.hora+'h</span></div>'
+      +'</div>'
+      +'<a class="lp-sc-wa" href="https://wa.me/'+waNum+'?text='+waMsg+'" target="_blank">'
+      +'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>'
+      +'Reservar'
+      +'</a>'
+      +'</div>';
+  });
+  wrap.innerHTML=out;
+}
+
+// Login
+function openLogin(){
+  document.getElementById('login-ov').classList.add('on');
+  document.getElementById('login-code').value='';
+  document.getElementById('login-err').textContent='';
+  document.getElementById('login-code').classList.remove('err','shake');
+  var hint=document.getElementById('login-email-hint');
+  if(hint)hint.textContent='Admin: '+(DB.config.adminEmail||'admin@aurispole.com');
+  setTimeout(function(){document.getElementById('login-code').focus();},100);
+}
+function closeLogin(){document.getElementById('login-ov').classList.remove('on');}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&document.getElementById('login-ov').classList.contains('on'))closeLogin();
+});
+
+// Logout button in CRM (add to sidebar footer)
+function logoutCRM(){
+  if(!confirm('¿Salir del CRM y volver a la página principal?'))return;
+  showLanding();
+}
+
+// Config: edit access code
+function updateWALinks(num){
+  const clean=num.replace(/[^0-9]/g,'');
+  const base=`https://wa.me/${clean}`;
+  const msg1=encodeURIComponent('Hola! Me interesa información sobre las clases de Auris Pole Studio 🌟');
+  const msg2=encodeURIComponent('Hola! Quiero reservar una clase en Auris Pole Studio 🌟');
+  const msg3=encodeURIComponent('Hola! Quiero información sobre Auris Pole Studio 🌟');
+  document.querySelectorAll('#wa-float-btn, #lp-wa-clases, a[href*="wa.me"]').forEach(a=>{
+    if(a.href.includes('wa.me'))a.href=`${base}?text=${a.href.includes('reservar')?msg2:msg1}`;
+  });
+  localStorage.setItem('ap_wa_num',clean);
+}
+function saveAccessCode(){
+  const nc=document.getElementById('cfg-new-code')?.value?.trim()?.toUpperCase();
+  if(!nc||nc.length<4){toast('El código debe tener al menos 4 caracteres','er');return;}
+  setAccessCode(nc);
+  toast('Código de acceso actualizado ✓','ok');
+  if(document.getElementById('cfg-new-code'))document.getElementById('cfg-new-code').value='';
+}
+
+// Patch rConfig to add access code section
+const _origRConfig=rConfig;
+rConfig=function(){
+  _origRConfig();
+  // Add access code UI after config renders
+  setTimeout(()=>{
+    const planes=document.getElementById('cfg-planes');
+    if(planes&&planes.parentElement&&!document.getElementById('cfg-code-section')){
+      const sec=document.createElement('div');
+      sec.id='cfg-code-section';
+      sec.style.cssText='margin-top:14px';
+      sec.className='cfg-section';
+      sec.innerHTML=`<div class="cfg-h"><div class="cfg-t">Código de Acceso al CRM</div></div>
+        <div class="cfg-body" style="padding:14px 18px">
+          <div style="font-size:11px;color:var(--lgray);margin-bottom:10px">Código actual: <strong style="font-family:DM Mono,monospace;letter-spacing:.1em">${getAccessCode()}</strong></div>
+          <div class="fg-r">
+            <div class="fg"><label class="flbl">Nuevo Código (mín. 4 chars)</label><input class="finp" id="cfg-new-code" type="text" placeholder="Ej: POLE2025" maxlength="12" style="text-transform:uppercase;font-family:DM Mono,monospace;letter-spacing:.12em"></div>
+          </div>
+          <button class="btn sm bd" onclick="saveAccessCode()">Actualizar Código</button>
+        </div>`;
+      planes.parentElement.appendChild(sec);
+    }
+  },100);
+};
+
+// Patch sidebar to add logout button
+const _origGoView=typeof goView==='function'?goView:()=>{};
+goView=function(v){
+  try{_origGoView(v);}catch(e){console.error('goView error',e);}
+  // Add logout button to sidebar footer if not present
+  if(!document.getElementById('logout-btn')){
+    const foot=document.querySelector('.s-foot');
+    if(foot&&document.querySelector('.shell')?.style.display!=='none'){
+      const lb=document.createElement('button');
+      lb.id='logout-btn';
+      lb.style.cssText='display:flex;align-items:center;gap:8px;background:none;border:none;cursor:pointer;font-family:Jost,sans-serif;font-size:12px;color:rgba(255,255,255,.28);padding:8px 0;margin-top:10px;transition:.2s;width:100%';
+      lb.innerHTML='<span style="font-size:14px">←</span> Volver al inicio';
+      lb.onmouseenter=()=>lb.style.color='rgba(255,255,255,.6)';
+      lb.onmouseleave=()=>lb.style.color='rgba(255,255,255,.28)';
+      lb.onclick=logoutCRM;
+      foot.appendChild(lb);
+    }
+  }
+};
+
+// ══ INIT: show landing first ══
+
+// ══════════════════════════════════════════════════════════════
+//  SISTEMA DE ROLES — ADMIN / INSTRUCTOR/A
+// ══════════════════════════════════════════════════════════════
+var currentRole = 'admin';
+var currentInst = null;
+
+function setLoginRole(role){
+  currentRole = role;
+  var btnA = document.getElementById('btn-rol-admin');
+  var btnI = document.getElementById('btn-rol-inst');
+  var hint = document.getElementById('login-hint-txt');
+  var inp  = document.getElementById('login-code');
+  var btnM = document.getElementById('login-btn-main');
+  // Colores inline — funciona en todos los navegadores sin CSS externo
+  if(btnA){
+    btnA.style.background = role==='admin' ? '#C2A87A' : 'transparent';
+    btnA.style.color      = role==='admin' ? '#fff'    : 'rgba(255,255,255,.35)';
+  }
+  if(btnI){
+    btnI.style.background = role==='instructor' ? '#C2A87A' : 'transparent';
+    btnI.style.color      = role==='instructor' ? '#fff'    : 'rgba(255,255,255,.35)';
+  }
+  if(hint) hint.textContent = role==='admin'
+    ? 'CÓDIGO DE ACCESO ADMIN'
+    : 'ÚLTIMOS 5 DÍGITOS DE TU TELÉFONO';
+  if(inp){
+    inp.placeholder = role==='admin' ? '••••••' : 'Ej: 21543';
+    inp.value = '';
+    inp.focus();
+  }
+  if(btnM) btnM.textContent = role==='admin' ? 'Ingresar al CRM' : 'Entrar como Instructor/a';
+  var err = document.getElementById('login-err');
+  if(err) err.textContent = '';
+}
+
+function checkLogin(){
+  var code = document.getElementById('login-code').value.trim();
+  var inp  = document.getElementById('login-code');
+  var err  = document.getElementById('login-err');
+  var btnM = document.getElementById('login-btn-main');
+  if(!code){ if(err) err.textContent = 'Ingresa tu código.'; return; }
+
+  if(currentRole === 'admin'){
+    // ── Admin: compara con código guardado ──────────────────
+    var stored = getAccessCode();
+    if(code.toUpperCase() === stored.toUpperCase()){
+      closeLogin();
+      showLoading('Cargando datos…');
+      var ok = false;
+      var t  = setTimeout(function(){ if(!ok){ ok=true; hideLoading(); showCRM(); }}, 5500);
+      fsLoadAll()
+        .then(function(){ if(!ok){ ok=true; clearTimeout(t); hideLoading(); showCRM(); }})
+        .catch(function(){ if(!ok){ ok=true; clearTimeout(t); hideLoading(); showCRM(); }});
+    } else {
+      _loginError(inp, err, btnM, 'Código incorrecto. Intenta de nuevo.');
+    }
+
+  } else {
+    // ── Instructor/a: últimos 5 dígitos del teléfono ────────
+    var digits = code.replace(/[^0-9]/g, '');
+    var found  = null;
+    for(var ii = 0; ii < DB.instructores.length; ii++){
+      if(aluCode(DB.instructores[ii].tel) === digits){ found = DB.instructores[ii]; break; }
+    }
+    if(found){
+      currentInst = found;
+      closeLogin();
+      showLoading('Cargando tus clases…');
+      var ok2 = false;
+      var t2  = setTimeout(function(){ if(!ok2){ ok2=true; hideLoading(); showInstView(); }}, 5500);
+      fsLoadAll()
+        .then(function(){ if(!ok2){ ok2=true; clearTimeout(t2); hideLoading(); showInstView(); }})
+        .catch(function(){ if(!ok2){ ok2=true; clearTimeout(t2); hideLoading(); showInstView(); }});
+    } else {
+      _loginError(inp, err, btnM, 'Código no encontrado. Son los últimos 5 dígitos de tu teléfono.');
+    }
+  }
+}
+
+function _loginError(inp, err, btn, msg){
+  if(inp){ inp.classList.add('err'); }
+  if(err){ err.textContent = msg; }
+  if(inp) setTimeout(function(){ inp.classList.add('shake'); setTimeout(function(){ inp.classList.remove('shake'); }, 400); }, 50);
+  setTimeout(function(){ if(inp) inp.classList.remove('err'); if(err) err.textContent=''; }, 2800);
+  if(btn){ var orig=btn.textContent; btn.textContent='Código incorrecto'; setTimeout(function(){btn.textContent=orig;},2000); }
+}
+
+// ══ Vista Instructor/a ════════════════════════════════════════
+function showInstView(){
+  var lp   = document.getElementById('landing-page');
+  var wa   = document.getElementById('wa-float-btn');
+  var sh   = document.querySelector('.shell');
+  var inst = document.getElementById('inst-shell');
+  if(lp)   lp.style.display   = 'none';
+  if(wa)   wa.style.display   = 'none';
+  if(sh)   sh.style.display   = 'none';
+  if(inst){ inst.style.display = 'flex'; }
+  document.body.style.overflow = 'hidden';
+  var nom = currentInst ? currentInst.nom : 'Instructor/a';
+  var n1  = document.getElementById('inst-name-top');
+  var n2  = document.getElementById('inst-welcome-name');
+  var sub = document.getElementById('inst-sub-date');
+  if(n1) n1.textContent = nom;
+  if(n2) n2.textContent = nom.split(' ')[0];
+  if(sub){
+    var d = new Date();
+    var DD = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    var MM = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+    sub.textContent = DD[d.getDay()] + ', ' + d.getDate() + ' ' + MM[d.getMonth()] + ' ' + d.getFullYear();
+  }
+  renderInstClases();
+}
+
+function renderInstClases(){
+  var wrap = document.getElementById('inst-clases');
+  if(!wrap || !currentInst) return;
+  var misClases = DB.clases.filter(function(c){ return c.inst === currentInst.id; });
+  if(!misClases.length){
+    wrap.innerHTML = '<div class="ic-empty">No tienes clases asignadas actualmente.</div>';
+    return;
+  }
+  var waNum = localStorage.getItem('ap_wa_num') || '593984521543';
+  var out = '';
+  misClases.forEach(function(c){
+    var resC = DB.reservas.filter(function(r){ return r.cla===c.id && r.est!=='cancelada'; });
+    var pct  = c.cupos > 0 ? Math.round(c.ins/c.cupos*100) : 0;
+    var pfc  = pct>=100?'hi':pct>=80?'mid':'ok';
+    var dias = Array.isArray(c.dias)&&c.dias.length ? c.dias.join(' · ') : (c.dia||'—');
+    out += '<div class="ic-card">';
+    out += '<div class="ic-head">';
+    out += '<div><div class="ic-title">'+c.nom+'</div>';
+    out += '<div class="ic-meta">'+dias+' · '+c.hora+'h · '+(c.dur||90)+'min</div></div>';
+    var nSi  = resC.filter(function(r){ return r.asistio===true; }).length;
+    var nNo  = resC.filter(function(r){ return r.asistio===false; }).length;
+    var nPen = resC.length - nSi - nNo;
+    out += '<div style="text-align:right">';
+    out += '<div class="ic-badge">'+c.ins+'/'+c.cupos+'</div>';
+    out += '<div style="font-family:DM Mono,monospace;font-size:9px;margin-top:4px;display:flex;gap:6px;justify-content:flex-end">';
+    if(nSi)  out += '<span style="color:#128c5e">✓'+nSi+'</span>';
+    if(nNo)  out += '<span style="color:#c1121f">✗'+nNo+'</span>';
+    if(nPen) out += '<span style="color:var(--lgray)">·'+nPen+'</span>';
+    out += '</div>';
+    out += '<div class="prog" style="width:80px;margin-top:4px"><div class="pf '+pfc+'" style="width:'+pct+'%"></div></div>';
+    out += '</div></div>';
+    if(resC.length){
+      out += '<div class="ic-alus">';
+      resC.forEach(function(r){
+        var a = getAlu(r.alu);
+        if(!a) return;
+        var waMsg = encodeURIComponent('Hola '+a.nom.split(' ')[0]+'! Te escribe '+currentInst.nom+' de Auris Pole Studio 🌟');
+        out += '<div class="ic-alu-row">';
+        out += '<div class="av" style="width:28px;height:28px;font-size:10px">'+ini(a.nom)+'</div>';
+        out += '<div style="flex:1"><div class="ic-alu-nom">'+a.nom+'</div>';
+        out += '<div class="ic-alu-tel">'+a.tel+'</div></div>';
+        out += '<div style="display:flex;gap:6px;align-items:center">';
+        out += '<a class="ic-wa-btn" href="https://wa.me/'+a.tel.replace(/[^0-9]/g,'')+'?text='+waMsg+'" target="_blank" style="margin-left:4px">💬</a>';
+        out += '</div>';
+        out += '</div>';
+      });
+      out += '</div>';
+    } else {
+      out += '<div class="ic-empty" style="padding:14px 18px;font-size:12px">Sin alumnas inscritas</div>';
+    }
+    out += '</div>';
+  });
+  wrap.innerHTML = out;
+}
+
+function logoutInst(){
+  currentInst = null;
+  currentRole = 'admin';
+  var inst = document.getElementById('inst-shell');
+  if(inst) inst.style.display = 'none';
+  document.body.style.overflow = '';
+  showLanding();
+}
+
+(function restoreWA(){
+  const saved=localStorage.getItem('ap_wa_num');
+  if(saved){
+    const cfgTel=document.getElementById('cfg-tel');
+    if(cfgTel){cfgTel.value='+'+saved;updateWALinks('+'+saved);}
+    else{
+      const clean=saved;
+      document.querySelectorAll('a[href*="wa.me"]').forEach(a=>{
+        const u=new URL(a.href);
+        a.href=`https://wa.me/${clean}${u.search}`;
+      });
+    }
+  }
+})();
+(function init(){
+  if(!localStorage.getItem('ap_wa_num'))localStorage.setItem('ap_wa_num','593984521543');
+  try{setDate();}catch(e){}
+  // Cargar clases públicas de Firestore para la portada
+  // Cargar clases para portada — máx 4s, luego portada igual
+  var landingDone=false;
+  function goLanding(){if(landingDone)return;landingDone=true;hideLoading();try{showLanding();}catch(e){}}
+  setTimeout(goLanding,4000);
+  FSdb.collection('clases').get().then(function(snap){
+    if(!snap.empty){DB.clases=snap.docs.map(function(d){var o=d.data();o.id=d.id;return o;});}
+    goLanding();
+  }).catch(function(e){
+    console.warn('Firestore no disponible:', e.message);
+    goLanding();
+  });
+})();
+</script>
+
+
+<!-- ════════════════════════════════════
+     LANDING PAGE
+════════════════════════════════════ -->
+<div id="landing-page" class="lp">
+  <!-- NAV -->
+  <nav class="lp-nav">
+    <div class="lp-logo">
+      <div class="ap-logo">
+    <div class="ap-line1">AURIS&nbsp;<strong>POLE</strong></div>
+    <div class="ap-line2">POLE DANCE STUDIO</div>
+  </div>
+    </div>
+    <div class="lp-nav-r">
+      <div class="lp-loc">📍 Calle del Batán y Española, Cuenca</div>
+      <button class="lp-admin-btn" onclick="openLogin()">· · ·</button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <div class="lp-hero">
+    <div class="lp-hero-logo" style="margin-bottom:28px">
+      <div class="ap-logo" style="font-size:clamp(38px,6vw,72px);align-items:center">
+        <div class="ap-line1" style="text-align:center">AURIS&nbsp;<strong>POLE</strong></div>
+        <div class="ap-line2" style="text-align:center;font-size:.28em;letter-spacing:.38em;color:rgba(255,255,255,.4);margin-top:.5em">POLE DANCE STUDIO</div>
+        <div class="ap-line2" style="text-align:center;font-size:.22em;letter-spacing:.35em;color:rgba(255,255,255,.25);margin-top:.3em">CUENCA · ECUADOR</div>
+      </div>
+    </div>
+    <div class="lp-hero-tag" style="display:none">Pole Dance Studio · Cuenca, Ecuador</div>
+    <p style="font-family:'Century Gothic','Josefin Sans','Futura',Arial,sans-serif;font-size:clamp(11px,1.8vw,14px);font-weight:300;letter-spacing:.5em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:22px;text-align:center">ARTE &nbsp;·&nbsp; FUERZA &nbsp;·&nbsp; LIBERTAD</p>
+    <p style="font-size:15px;color:rgba(255,255,255,.48);max-width:440px;line-height:1.75;text-align:center">Descubre el Pole Dance en un espacio seguro.<br>Clases para todos los niveles con instructores certificados.</p>
+    <div class="lp-hero-loc" style="margin-bottom:40px">Calle del Batán y Española · Cuenca, Ecuador</div>
+  </div>
+
+  <!-- CLASES DISPONIBLES -->
+  <div class="lp-section" style="padding-bottom:0">
+    <div class="lp-section-title">Nuestras Clases</div>
+    <div class="lp-section-sub">Inscripciones y reservas exclusivamente por WhatsApp</div>
+    <div class="lp-divider"></div>
+  </div>
+  <div style="max-width:1160px;margin:0 auto;padding:0 24px 60px;box-sizing:border-box">
+    <div class="lp-clases-grid" id="lp-clases"></div>
+    <div style="text-align:center;margin-top:32px;padding:0 48px">
+      <a id="lp-wa-clases" href="https://wa.me/593984521543?text=Hola!%20Me%20interesa%20información%20sobre%20las%20clases%20de%20Auris%20Pole%20🌟" target="_blank"
+        style="display:inline-flex;align-items:center;gap:10px;background:transparent;border:1px solid rgba(194,168,122,.35);color:var(--tan);padding:13px 32px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;text-decoration:none;transition:all .25s">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Consultar &amp; Reservar por WhatsApp
+      </a>
+    </div>
+  </div>
+
+  <!-- INFO -->
+  <div class="lp-info">
+    <div class="lp-info-item">
+      <span class="lp-info-icon">📍</span>
+      <div class="lp-info-title">Ubicación</div>
+      <div class="lp-info-desc">Calle del Batán y Española<br>Cuenca, Ecuador</div>
+    </div>
+    <div class="lp-info-item">
+      <span class="lp-info-icon">💬</span>
+      <div class="lp-info-title">Contacto</div>
+      <div class="lp-info-desc">Inscripciones, reservas y consultas<br>exclusivamente vía WhatsApp</div>
+    </div>
+    <div class="lp-info-item">
+      <span class="lp-info-icon">✨</span>
+      <div class="lp-info-title">Ambiente</div>
+      <div class="lp-info-desc">Espacio exclusivo para mujeres<br>Grupos pequeños y personalizados</div>
+    </div>
+    <div class="lp-info-item">
+      <span class="lp-info-icon">🎓</span>
+      <div class="lp-info-title">Instructores</div>
+      <div class="lp-info-desc">Certificadas y con experiencia<br>en competencias nacionales</div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="lp-footer">
+    <div class="lp-footer-logo"><div class="ap-logo" style="font-size:14px"><div class="ap-line1">AURIS&nbsp;<strong>POLE</strong></div></div></div>
+    <div class="lp-footer-txt">
+      <div>AURIS POLE STUDIO · Cuenca, Ecuador</div>
+      <div>Calle del Batán y Española · WhatsApp para reservas</div>
+    </div>
+  </footer>
+</div>
+
+<!-- Floating WA button (only on landing) -->
+<a id="wa-float-btn" href="https://wa.me/593984521543?text=Hola!%20Me%20interesa%20información%20sobre%20Auris%20Pole%20Studio%20%F0%9F%8C%9F" target="_blank" class="wa-float" title="Escríbenos por WhatsApp">
+  <div class="wa-float-pulse"></div>
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+<!-- LOGIN MODAL -->
+<div class="login-ov" id="login-ov">
+  <div class="login-box">
+    <div class="ap-logo" style="font-size:18px;align-items:center;margin-bottom:18px">
+      <div class="ap-line1" style="text-align:center;color:#fff">AURIS&nbsp;<strong>POLE</strong></div>
+      <div style="font-family:'Century Gothic','Josefin Sans',Arial,sans-serif;font-size:9px;color:rgba(255,255,255,.3);letter-spacing:.3em;text-transform:uppercase;margin-top:4px;text-align:center">STUDIO</div>
+    </div>
+    <div style="display:flex;border:1px solid rgba(255,255,255,.15);border-radius:4px;overflow:hidden;margin-bottom:18px">
+      <button id="btn-rol-admin" onclick="setLoginRole('admin')"
+        style="flex:1;padding:10px;background:#C2A87A;color:#fff;border:none;cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;transition:all .2s">
+        ◈ Administrador
+      </button>
+      <button id="btn-rol-inst" onclick="setLoginRole('instructor')"
+        style="flex:1;padding:10px;background:transparent;color:rgba(255,255,255,.35);border:none;border-left:1px solid rgba(255,255,255,.15);cursor:pointer;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;transition:all .2s">
+        ★ Instructor/a
+      </button>
+    </div>
+    <p id="login-hint-txt" style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px;text-align:center">CÓDIGO DE ACCESO</p>
+    <input type="password" class="login-input" id="login-code" maxlength="20" placeholder="••••••"
+      onkeydown="if(event.key==='Enter')checkLogin()">
+    <div class="login-err-msg" id="login-err"></div>
+    <button id="login-btn-main" class="login-btn" onclick="checkLogin()">Ingresar al CRM</button>
+    <button class="login-close" onclick="closeLogin()">← Volver a la portada</button>
+  </div>
+</div>
+
+<!-- ══ LOADING SCREEN ══ -->
+<div class="fb-loading" id="fb-loading">
+  <div class="fb-loading-logo">AURIS <strong>POLE</strong></div>
+  <div class="fb-spinner"></div>
+  <div class="fb-loading-txt">Conectando con Firebase…</div>
+</div>
+
+<!-- ══ VISTA INSTRUCTOR/A ══ -->
+<div class="inst-shell" id="inst-shell" style="display:none">
+  <div class="inst-topbar">
+    <div class="inst-logo">AURIS <strong>POLE</strong></div>
+    <div class="inst-user">
+      <span class="inst-name" id="inst-name-top">Instructor/a</span>
+      <button class="btn btn-out btn-sm" style="color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.15);font-size:11px" onclick="logoutInst()">← Salir</button>
+    </div>
+  </div>
+  <div class="inst-content">
+    <div class="inst-welcome">Bienvenida, <em id="inst-welcome-name">Instructor/a</em></div>
+    <div class="inst-sub" id="inst-sub-date"></div>
+    <div class="inst-section">Mis Clases & Alumnas</div>
+    <div id="inst-clases"></div>
+  </div>
+</div>
+</body>
+</html>
